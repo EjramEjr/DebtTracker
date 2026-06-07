@@ -20,15 +20,20 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
         body { background: linear-gradient(135deg, #0f172a, #1e1b4b, #312e81); min-height: 100vh; color: var(--light); overflow-x: hidden; padding-top: env(safe-area-inset-top); }
         
-        #authView { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--dark); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; transition: var(--transition); }
-        .auth-card { background: rgba(255,255,255,0.05); padding: 30px; border-radius: var(--radius); width: 100%; max-width: 400px; text-align: center; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
-        .auth-card h2 { margin-bottom: 20px; color: var(--primary); }
-        .auth-input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.2); color: white; }
-        .auth-btn { width: 100%; padding: 12px; border: none; border-radius: var(--radius-sm); font-weight: bold; cursor: pointer; margin-bottom: 10px; transition: var(--transition); }
+        /* تنسيق شاشة الدخول المطور */
+        #authView { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--dark); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .auth-card { background: rgba(255,255,255,0.03); padding: 35px 25px; border-radius: var(--radius); width: 100%; max-width: 380px; text-align: center; border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(15px); box-shadow: 0 15px 35px rgba(0,0,0,0.3); }
+        .auth-card h2 { margin-bottom: 10px; color: var(--primary); font-size: 1.8rem; }
+        .auth-input { width: 100%; padding: 14px; margin-bottom: 15px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: white; outline: none; transition: var(--transition); font-size: 0.95rem; }
+        .auth-input:focus { border-color: var(--primary); background: rgba(0,0,0,0.5); }
+        .auth-btn { width: 100%; padding: 14px; border: none; border-radius: var(--radius-sm); font-weight: bold; cursor: pointer; transition: var(--transition); font-size: 0.95rem; }
         .btn-main { background: var(--primary); color: white; }
-        .btn-social { background: rgba(255,255,255,0.1); color: white; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .btn-social.google:hover { background: #db4437; }
-        .btn-social.phone:hover { background: var(--success); }
+        .btn-main:hover { background: var(--primary-dark); }
+        .btn-outline { background: transparent; color: white; border: 1px solid rgba(255,255,255,0.2); }
+        .btn-outline:hover { background: rgba(255,255,255,0.05); }
+        .btn-social { background: rgba(255,255,255,0.05); color: white; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; }
+        .btn-social.google:hover { background: #db4437; border-color: transparent; }
+        .btn-social.phone:hover { background: var(--success); border-color: transparent; }
         
         .header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .logo { font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -72,16 +77,24 @@
     <div id="authView">
         <div class="auth-card">
             <h2 class="logo"><i class="fas fa-wallet"></i> دفتر الديون</h2>
-            <p style="margin-bottom: 20px; color: var(--gray);">سجل دخولك لحفظ بياناتك في السحابة</p>
+            <p style="margin-bottom: 25px; color: var(--gray); font-size: 0.9rem;">مزامنة سحابية آمنة لبياناتك</p>
             
             <input type="email" id="emailInput" class="auth-input" placeholder="البريد الإلكتروني">
             <input type="password" id="passwordInput" class="auth-input" placeholder="كلمة المرور">
-            <button class="auth-btn btn-main" onclick="emailLogin()">دخول / تسجيل جديد</button>
             
-            <div style="margin: 20px 0; color: var(--gray);">أو بواسطة</div>
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button class="auth-btn btn-main" style="margin-bottom: 0;" onclick="emailLogin()">دخول</button>
+                <button class="auth-btn btn-outline" style="margin-bottom: 0;" onclick="emailRegister()">حساب جديد</button>
+            </div>
             
-            <button class="auth-btn btn-social google" onclick="alert('للتفعيل، راجع إعدادات Firebase Console أولاً')"><i class="fab fa-google"></i> حساب جوجل</button>
-            <button class="auth-btn btn-social phone" onclick="alert('للتفعيل، راجع إعدادات Firebase Console أولاً')"><i class="fas fa-phone"></i> رقم الهاتف</button>
+            <div style="display: flex; align-items: center; margin: 20px 0; color: var(--gray); font-size: 0.85rem;">
+                <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
+                <span style="padding: 0 10px;">أو الدخول بواسطة</span>
+                <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
+            </div>
+            
+            <button class="auth-btn btn-social google" onclick="alert('للتفعيل، اربط المفاتيح بلوحة التحكم أولاً')"><i class="fab fa-google"></i> حساب جوجل</button>
+            <button class="auth-btn btn-social phone" onclick="alert('للتفعيل، اربط المفاتيح بلوحة التحكم أولاً')"><i class="fas fa-phone"></i> رقم الهاتف</button>
         </div>
         <div class="copyright">Developed by <span>Ejram</span> &copy; 2026</div>
     </div>
@@ -108,7 +121,6 @@
                     <div>إجمالي الديون</div>
                 </div>
             </div>
-            
             <div class="customers-container" id="customersList"></div>
             <div class="copyright">Developed by <span>Ejram</span> &copy; 2026</div>
         </div>
@@ -118,17 +130,14 @@
                 <h2 id="customerNameTitle">اسم العميل</h2>
                 <button style="background:rgba(255,255,255,0.1); border:none; padding:10px 15px; border-radius:10px; color:white;" onclick="goBack()"><i class="fas fa-arrow-right"></i> رجوع</button>
             </div>
-            
             <div class="total-box">
                 <div>الرصيد المتبقي</div>
                 <div class="total-amount" id="customerTotalDebt">0</div>
             </div>
-
             <div class="action-buttons">
                 <button class="btn" style="background:var(--danger);" onclick="showModal('debtModal')"><i class="fas fa-plus"></i> إضافة دين</button>
                 <button class="btn" style="background:var(--success);" onclick="showModal('paymentModal')"><i class="fas fa-hand-holding-usd"></i> تسديد دفعة</button>
             </div>
-
             <h3 style="margin: 20px 0 10px;">سجل العمليات</h3>
             <div id="debtsList"></div>
         </div>
@@ -204,14 +213,17 @@
         function emailLogin() {
             const email = document.getElementById('emailInput').value;
             const pass = document.getElementById('passwordInput').value;
-            if(!email || !pass) return alert("أدخل البريد وكلمة المرور");
-            
-            auth.signInWithEmailAndPassword(email, pass)
-                .catch(err => {
-                    if(err.code === 'auth/user-not-found') {
-                        auth.createUserWithEmailAndPassword(email, pass).catch(e => alert(e.message));
-                    } else { alert("خطأ في تسجيل الدخول: " + err.message); }
-                });
+            if(!email || !pass) return alert("الرجاء إدخال البريد وكلمة المرور");
+            auth.signInWithEmailAndPassword(email, pass).catch(err => alert("خطأ: " + err.message));
+        }
+
+        function emailRegister() {
+            const email = document.getElementById('emailInput').value;
+            const pass = document.getElementById('passwordInput').value;
+            if(!email || !pass) return alert("الرجاء إدخال البريد وكلمة المرور");
+            auth.createUserWithEmailAndPassword(email, pass)
+                .then(() => alert("تم إنشاء حسابك بنجاح!"))
+                .catch(err => alert("خطأ في الإنشاء: " + err.message));
         }
 
         function logout() { auth.signOut(); }
@@ -219,7 +231,6 @@
         function loadData() {
             db.collection('users').doc(currentUser.uid).collection('customers').onSnapshot(snapshot => {
                 customers = [];
-                let totalD = 0;
                 snapshot.forEach(doc => {
                     let data = doc.data();
                     data.id = doc.id;
@@ -286,7 +297,6 @@
             }
 
             const sorted = [...c.transactions].sort((a,b) => new Date(b.date) - new Date(a.date));
-            
             list.innerHTML = sorted.map(t => `
                 <div class="debt-item ${t.type}">
                     <div>
@@ -306,10 +316,8 @@
             const item = document.getElementById('custItem').value;
             const amt = document.getElementById('custAmount').value;
             if(!name) return alert("الاسم مطلوب");
-
             let trans = [];
             if(item && amt) trans.push({ id: Date.now().toString(), type: 'debt', item: item, amount: Number(amt), date: new Date().toISOString() });
-
             await db.collection('users').doc(currentUser.uid).collection('customers').add({ name: name, transactions: trans });
             hideModal('customerModal');
             document.getElementById('custName').value = ''; document.getElementById('custItem').value = ''; document.getElementById('custAmount').value = '';
@@ -320,15 +328,11 @@
             const itemId = type === 'debt' ? 'debtItem' : null;
             const amt = document.getElementById(amtId).value;
             const item = itemId ? document.getElementById(itemId).value : 'تسديد';
-            
             if(!amt || amt <= 0) return alert("أدخل مبلغ صحيح");
-            
             const c = customers.find(x => x.id === currentCustomerId);
             const newTrans = { id: Date.now().toString(), type: type, item: item, amount: Number(amt), date: new Date().toISOString() };
-            
             let transList = c.transactions || [];
             transList.push(newTrans);
-            
             await db.collection('users').doc(currentUser.uid).collection('customers').doc(currentCustomerId).update({ transactions: transList });
             hideModal(type === 'debt' ? 'debtModal' : 'paymentModal');
             document.getElementById(amtId).value = ''; if(itemId) document.getElementById(itemId).value = '';
