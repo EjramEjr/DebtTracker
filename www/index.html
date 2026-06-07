@@ -1,350 +1,358 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Debt Tracker - متتبع الديون</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Debt Tracker - دفتر الديون</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    
     <style>
-        /* (نفس تنسيقات CSS الخاصة بك بدون تغيير) */
-        :root { --primary: #6366f1; --primary-dark: #4f46e5; --primary-light: #818cf8; --secondary: #ec4899; --accent: #06b6d4; --success: #10b981; --warning: #f59e0b; --danger: #ef4444; --dark: #0f172a; --dark-light: #1e293b; --dark-lighter: #334155; --light: #f8fafc; --gray: #94a3b8; --shadow: 0 10px 40px -10px rgba(0,0,0,0.3); --shadow-lg: 0 20px 60px -15px rgba(0,0,0,0.4); --radius: 16px; --radius-sm: 12px; --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        * { margin: 0; padding: 0; box-sizing: border-box; } body { font-family: 'Inter', 'Cairo', sans-serif; background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%); min-height: 100vh; color: var(--light); overflow-x: hidden; }
-        .bg-animation { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; } .bg-animation .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4; animation: float 20s infinite ease-in-out; } .orb-1 { width: 400px; height: 400px; background: var(--primary); top: -10%; left: -10%; animation-delay: 0s; } .orb-2 { width: 300px; height: 300px; background: var(--secondary); top: 60%; right: -5%; animation-delay: -5s; } .orb-3 { width: 250px; height: 250px; background: var(--accent); bottom: -10%; left: 30%; animation-delay: -10s; } @keyframes float { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(30px, -30px) scale(1.1); } 66% { transform: translate(-20px, 20px) scale(0.9); } }
-        .header { padding: 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.05); } .logo { display: flex; align-items: center; gap: 12px; font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, var(--primary-light), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; } .logo i { font-size: 1.8rem; color: var(--primary-light); -webkit-text-fill-color: initial; } .header-actions { display: flex; gap: 10px; align-items: center; } .btn { padding: 10px 20px; border: none; border-radius: var(--radius-sm); cursor: pointer; font-family: inherit; font-weight: 600; font-size: 0.9rem; transition: var(--transition); display: inline-flex; align-items: center; gap: 8px; position: relative; overflow: hidden; } .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; } .btn-success { background: linear-gradient(135deg, var(--success), #059669); color: white; } .btn-danger { background: linear-gradient(135deg, var(--danger), #dc2626); color: white; } .btn-icon { width: 40px; height: 40px; padding: 0; border-radius: 50%; justify-content: center; background: rgba(255,255,255,0.1); color: var(--light); }
-        .stats-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; padding: 20px; max-width: 1200px; margin: 0 auto; } .stat-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 24px; border-radius: var(--radius); cursor: pointer; } .stat-icon { width: 50px; height: 50px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 16px; } .stat-icon.blue { background: rgba(99, 102, 241, 0.2); color: var(--primary-light); } .stat-icon.pink { background: rgba(236, 72, 153, 0.2); color: var(--secondary); } .stat-icon.green { background: rgba(16, 185, 129, 0.2); color: var(--success); } .stat-icon.orange { background: rgba(245, 158, 11, 0.2); color: var(--warning); } .stat-value { font-size: 2rem; font-weight: 800; margin-bottom: 4px; } .stat-label { color: var(--gray); font-size: 0.9rem; }
-        .search-section { padding: 0 20px; max-width: 1200px; margin: 0 auto 20px; } .search-box { position: relative; width: 100%; } .search-box input { width: 100%; padding: 16px 20px 16px 50px; border: 2px solid rgba(255,255,255,0.1); border-radius: var(--radius); background: rgba(255,255,255,0.05); color: var(--light); font-size: 1rem; } .search-box i { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--gray); }
-        .customers-container { padding: 0 20px 20px; max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; } .customer-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: var(--radius); padding: 24px; cursor: pointer; } .customer-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px; } .customer-avatar { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-weight: 700; color: white; } .customer-actions button { width: 32px; height: 32px; border-radius: 50%; border: none; background: rgba(255,255,255,0.1); color: var(--gray); cursor: pointer; } .customer-name { font-size: 1.2rem; font-weight: 700; margin-bottom: 4px; } .customer-debt { font-size: 1.5rem; font-weight: 800; color: var(--secondary); margin-bottom: 16px; } .customer-meta { display: flex; justify-content: space-between; align-items: center; color: var(--gray); font-size: 0.85rem; } .sync-status { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; } .sync-status.synced { background: rgba(16, 185, 129, 0.2); color: var(--success); } .sync-status.pending { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; visibility: hidden; } .modal-overlay.active { opacity: 1; visibility: visible; } .modal { background: linear-gradient(135deg, var(--dark-light), var(--dark)); border-radius: var(--radius); width: 90%; max-width: 500px; padding: 24px; } .form-group { margin-bottom: 20px; } .form-input { width: 100%; padding: 14px; border: 2px solid rgba(255,255,255,0.1); border-radius: var(--radius-sm); background: rgba(255,255,255,0.05); color: var(--light); }
-        .detail-page { display: none; max-width: 800px; margin: 0 auto; padding: 20px; } .detail-page.active { display: block; } .detail-header { display: flex; justify-content: space-between; margin-bottom: 24px; } .detail-total { padding: 20px; border-radius: var(--radius); text-align: center; background: rgba(255,255,255,0.05); margin-bottom: 24px; } .debts-table { width: 100%; border-collapse: collapse; } .debts-table td, .debts-table th { padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; }
-        .fab { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; font-size: 1.5rem; border: none; z-index: 99; cursor: pointer; }
-        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 2000; } .toast { background: var(--dark-light); padding: 16px; border-radius: var(--radius-sm); margin-bottom: 10px; display: flex; gap: 10px; }
-        .connection-status { position: fixed; top: 80px; left: 50%; transform: translateX(-50%) translateY(-100px); padding: 8px 20px; border-radius: 20px; font-size: 0.85rem; z-index: 999; transition: transform 0.3s; } .connection-status.show { transform: translateX(-50%) translateY(0); } .connection-status.online { background: rgba(16, 185, 129, 0.2); color: var(--success); } .connection-status.offline { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
-        [dir="rtl"] .search-box i { left: auto; right: 18px; } [dir="rtl"] .search-box input { padding-left: 20px; padding-right: 50px; } [dir="rtl"] .fab { right: auto; left: 30px; }
+        :root {
+            --primary: #6366f1; --secondary: #ec4899; --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
+            --dark: #0f172a; --dark-light: #1e293b; --light: #f8fafc; --gray: #94a3b8;
+            --radius: 16px; --radius-sm: 12px; --transition: all 0.3s ease;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        body { background: linear-gradient(135deg, #0f172a, #1e1b4b, #312e81); min-height: 100vh; color: var(--light); overflow-x: hidden; padding-top: env(safe-area-inset-top); }
+        
+        #authView { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--dark); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; transition: var(--transition); }
+        .auth-card { background: rgba(255,255,255,0.05); padding: 30px; border-radius: var(--radius); width: 100%; max-width: 400px; text-align: center; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
+        .auth-card h2 { margin-bottom: 20px; color: var(--primary); }
+        .auth-input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.2); color: white; }
+        .auth-btn { width: 100%; padding: 12px; border: none; border-radius: var(--radius-sm); font-weight: bold; cursor: pointer; margin-bottom: 10px; transition: var(--transition); }
+        .btn-main { background: var(--primary); color: white; }
+        .btn-social { background: rgba(255,255,255,0.1); color: white; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-social.google:hover { background: #db4437; }
+        .btn-social.phone:hover { background: var(--success); }
+        
+        .header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .logo { font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .stats-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; padding: 20px; }
+        .stat-card { background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: var(--radius); text-align: center; border: 1px solid rgba(255,255,255,0.1); }
+        .stat-value { font-size: 1.8rem; font-weight: bold; margin: 10px 0; }
+        
+        .customers-container { padding: 0 20px 80px; display: grid; gap: 15px; }
+        .customer-card { background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .customer-info h3 { font-size: 1.2rem; }
+        .customer-debt { font-size: 1.3rem; font-weight: bold; color: var(--secondary); }
+        
+        #detailView { display: none; padding: 20px; padding-bottom: 90px; }
+        .detail-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .total-box { text-align: center; padding: 20px; background: rgba(255,255,255,0.05); border-radius: var(--radius); margin-bottom: 20px; }
+        .total-amount { font-size: 2.5rem; color: var(--primary); font-weight: bold; }
+        
+        .debt-item { background: rgba(0,0,0,0.2); padding: 15px; border-radius: var(--radius-sm); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-right: 4px solid var(--danger); }
+        .debt-item.payment { border-right-color: var(--success); }
+        .debt-amount { font-weight: bold; font-size: 1.1rem; }
+        .debt-item.payment .debt-amount { color: var(--success); }
+        .debt-item.debt .debt-amount { color: var(--danger); }
+        
+        .fab { position: fixed; bottom: 30px; left: 30px; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; font-size: 1.5rem; border: none; cursor: pointer; box-shadow: 0 5px 20px rgba(0,0,0,0.3); transition: var(--transition); display: flex; align-items: center; justify-content: center; z-index: 90; }
+        .fab.hidden { transform: scale(0); opacity: 0; pointer-events: none; }
+        
+        .action-buttons { display: flex; gap: 10px; margin-top: 20px; }
+        .btn { flex: 1; padding: 15px; border-radius: var(--radius-sm); border: none; color: white; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
+        
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: var(--transition); }
+        .modal.active { opacity: 1; pointer-events: auto; }
+        .modal-content { background: var(--dark-light); padding: 25px; border-radius: var(--radius); width: 90%; max-width: 400px; }
+        
+        .copyright { text-align: center; padding: 20px; color: rgba(255,255,255,0.3); font-size: 0.85rem; margin-top: 20px; }
+        .copyright span { color: var(--primary); font-weight: bold; }
     </style>
 </head>
 <body>
-    <div class="bg-animation"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
-    
-    <div class="connection-status offline" id="connectionStatus">
-        <i class="fas fa-wifi"></i> <span>Offline Mode</span>
-    </div>
-    <div class="toast-container" id="toastContainer"></div>
 
-    <div id="app">
+    <div id="authView">
+        <div class="auth-card">
+            <h2 class="logo"><i class="fas fa-wallet"></i> دفتر الديون</h2>
+            <p style="margin-bottom: 20px; color: var(--gray);">سجل دخولك لحفظ بياناتك في السحابة</p>
+            
+            <input type="email" id="emailInput" class="auth-input" placeholder="البريد الإلكتروني">
+            <input type="password" id="passwordInput" class="auth-input" placeholder="كلمة المرور">
+            <button class="auth-btn btn-main" onclick="emailLogin()">دخول / تسجيل جديد</button>
+            
+            <div style="margin: 20px 0; color: var(--gray);">أو بواسطة</div>
+            
+            <button class="auth-btn btn-social google" onclick="alert('للتفعيل، راجع إعدادات Firebase Console أولاً')"><i class="fab fa-google"></i> حساب جوجل</button>
+            <button class="auth-btn btn-social phone" onclick="alert('للتفعيل، راجع إعدادات Firebase Console أولاً')"><i class="fas fa-phone"></i> رقم الهاتف</button>
+        </div>
+        <div class="copyright">Developed by <span>Ejram</span> &copy; 2026</div>
+    </div>
+
+    <div id="appView" style="display: none;">
         <header class="header">
-            <div class="logo"><i class="fas fa-wallet"></i><span id="appTitle">Debt Tracker</span></div>
-            <div class="header-actions">
-                <button class="btn btn-icon" onclick="toggleLanguage()"><i class="fas fa-language"></i></button>
-                <button class="btn btn-icon" onclick="syncData()" title="Sync"><i class="fas fa-sync-alt" id="syncIcon"></i></button>
+            <div class="logo"><i class="fas fa-wallet"></i> دفتر الديون</div>
+            <div style="display: flex; gap: 15px;">
+                <button style="background:none; border:none; color:white; font-size:1.2rem;" onclick="exportData()"><i class="fas fa-file-export"></i></button>
+                <button style="background:none; border:none; color:white; font-size:1.2rem;" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button>
             </div>
         </header>
-        
+
         <div id="dashboardView">
             <div class="stats-container">
                 <div class="stat-card">
-                    <div class="stat-icon blue"><i class="fas fa-users"></i></div>
+                    <i class="fas fa-users" style="color:var(--primary); font-size: 2rem;"></i>
                     <div class="stat-value" id="totalCustomers">0</div>
-                    <div class="stat-label" data-en="Total Customers" data-ar="إجمالي العملاء">Total Customers</div>
+                    <div>إجمالي العملاء</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon pink"><i class="fas fa-money-bill-wave"></i></div>
+                    <i class="fas fa-money-bill-wave" style="color:var(--secondary); font-size: 2rem;"></i>
                     <div class="stat-value" id="totalDebt">0</div>
-                    <div class="stat-label" data-en="Total Debt (EGP)" data-ar="إجمالي الديون (جنيه)">Total Debt (EGP)</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon orange"><i class="fas fa-clock"></i></div>
-                    <div class="stat-value" id="pendingSync">0</div>
-                    <div class="stat-label" data-en="Pending Sync" data-ar="في انتظار المزامنة">Pending Sync</div>
+                    <div>إجمالي الديون</div>
                 </div>
             </div>
             
-            <div class="search-section">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="Search by customer name..." oninput="searchCustomers()">
-                </div>
-            </div>
-            
-            <div class="customers-container" id="customersContainer"></div>
+            <div class="customers-container" id="customersList"></div>
+            <div class="copyright">Developed by <span>Ejram</span> &copy; 2026</div>
         </div>
 
-        <div class="detail-page" id="detailView">
+        <div id="detailView">
             <div class="detail-header">
-                <button class="btn" style="background: rgba(255,255,255,0.1); color: white;" onclick="showDashboard()">
-                    <i class="fas fa-arrow-left"></i> <span data-en="Back" data-ar="رجوع">Back</span>
-                </button>
-                <div class="header-actions">
-                    <button class="btn btn-icon" onclick="deleteCustomer()" style="color: var(--danger);"><i class="fas fa-trash"></i></button>
-                </div>
+                <h2 id="customerNameTitle">اسم العميل</h2>
+                <button style="background:rgba(255,255,255,0.1); border:none; padding:10px 15px; border-radius:10px; color:white;" onclick="goBack()"><i class="fas fa-arrow-right"></i> رجوع</button>
             </div>
-            <h1 id="detailCustomerName" style="font-size: 1.8rem; margin-bottom: 20px;">Customer Name</h1>
-            <div class="detail-total">
-                <div style="color: var(--gray); margin-bottom: 5px;" data-en="Total Debt" data-ar="إجمالي الديون">Total Debt</div>
-                <div id="detailTotalDebt" style="font-size: 2.5rem; font-weight: 800; color: var(--secondary);">0 EGP</div>
+            
+            <div class="total-box">
+                <div>الرصيد المتبقي</div>
+                <div class="total-amount" id="customerTotalDebt">0</div>
             </div>
-            <table class="debts-table">
-                <thead><tr>
-                    <th data-en="Item" data-ar="المنتج">Item</th>
-                    <th data-en="Amount" data-ar="المبلغ">Amount</th>
-                    <th data-en="Date" data-ar="التاريخ">Date</th>
-                    <th></th>
-                </tr></thead>
-                <tbody id="debtsTableBody"></tbody>
-            </table>
-            <button class="btn btn-success" style="width: 100%; margin-top: 20px; justify-content: center;" onclick="openAddDebtModal()">
-                <i class="fas fa-plus"></i> <span data-en="Add Debt" data-ar="إضافة دين">Add Debt</span>
-            </button>
+
+            <div class="action-buttons">
+                <button class="btn" style="background:var(--danger);" onclick="showModal('debtModal')"><i class="fas fa-plus"></i> إضافة دين</button>
+                <button class="btn" style="background:var(--success);" onclick="showModal('paymentModal')"><i class="fas fa-hand-holding-usd"></i> تسديد دفعة</button>
+            </div>
+
+            <h3 style="margin: 20px 0 10px;">سجل العمليات</h3>
+            <div id="debtsList"></div>
         </div>
     </div>
 
-    <button class="fab" onclick="openAddCustomerModal()" id="fabBtn"><i class="fas fa-plus"></i></button>
+    <button class="fab" id="mainFab" onclick="showModal('customerModal')"><i class="fas fa-plus"></i></button>
 
-    <div class="modal-overlay" id="addCustomerModal">
-        <div class="modal">
-            <h2 data-en="New Customer" data-ar="عميل جديد" style="margin-bottom: 20px;">New Customer</h2>
-            <div class="form-group"><input type="text" class="form-input" id="newCustomerName" placeholder="Name"></div>
-            <div class="form-group"><input type="text" class="form-input" id="newCustomerProduct" placeholder="Initial Product"></div>
-            <div class="form-group"><input type="number" class="form-input" id="newCustomerAmount" placeholder="Amount (EGP)"></div>
-            <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                <button class="btn" style="background: rgba(255,255,255,0.1); color: white;" onclick="closeModal('addCustomerModal')">Cancel</button>
-                <button class="btn btn-primary" onclick="addCustomer()">Save</button>
+    <div class="modal" id="customerModal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 20px;">إضافة عميل جديد</h3>
+            <input type="text" id="custName" class="auth-input" placeholder="اسم العميل">
+            <input type="text" id="custItem" class="auth-input" placeholder="المنتج الأول (اختياري)">
+            <input type="number" id="custAmount" class="auth-input" placeholder="المبلغ">
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="btn" style="background:var(--primary);" onclick="addCustomer()">حفظ</button>
+                <button class="btn" style="background:rgba(255,255,255,0.1);" onclick="hideModal('customerModal')">إلغاء</button>
             </div>
         </div>
     </div>
 
-    <div class="modal-overlay" id="addDebtModal">
-        <div class="modal">
-            <h2 data-en="New Debt" data-ar="دين جديد" style="margin-bottom: 20px;">New Debt</h2>
-            <div class="form-group"><input type="text" class="form-input" id="debtProductName" placeholder="Product"></div>
-            <div class="form-group"><input type="number" class="form-input" id="debtAmount" placeholder="Amount (EGP)"></div>
-            <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                <button class="btn" style="background: rgba(255,255,255,0.1); color: white;" onclick="closeModal('addDebtModal')">Cancel</button>
-                <button class="btn btn-success" onclick="addDebt()">Save</button>
+    <div class="modal" id="debtModal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 20px;">تسجيل دين جديد</h3>
+            <input type="text" id="debtItem" class="auth-input" placeholder="اسم المنتج">
+            <input type="number" id="debtAmount" class="auth-input" placeholder="المبلغ">
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="btn" style="background:var(--danger);" onclick="addTransaction('debt')">تسجيل الدين</button>
+                <button class="btn" style="background:rgba(255,255,255,0.1);" onclick="hideModal('debtModal')">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="paymentModal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 20px; color:var(--success);">تسديد دفعة مالية</h3>
+            <input type="number" id="paymentAmount" class="auth-input" placeholder="المبلغ المدفوع">
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="btn" style="background:var(--success);" onclick="addTransaction('payment')">تأكيد الدفع</button>
+                <button class="btn" style="background:rgba(255,255,255,0.1);" onclick="hideModal('paymentModal')">إلغاء</button>
             </div>
         </div>
     </div>
 
     <script>
-        // إعدادات Firebase من ملف google-services.json
         const firebaseConfig = {
             apiKey: "AIzaSyCcKXCMRlVWV7jo53v5EBXYErcq9-d4slQ",
             projectId: "aboroqya-4a460",
             storageBucket: "aboroqya-4a460.firebasestorage.app",
             appId: "1:998280256788:android:105cfdff77e5dd19d3b601"
         };
-        
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        const auth = firebase.auth();
+        db.enablePersistence().catch(err => console.log("Offline mode error", err));
 
-        // تفعيل قاعدة البيانات للعمل بدون إنترنت (Offline Persistence)
-        db.enablePersistence().catch(err => console.error("Firebase persistence error:", err.code));
-
+        let currentUser = null;
         let customers = [];
         let currentCustomerId = null;
-        let currentLang = localStorage.getItem('debtTrackerLang') || 'ar'; // تم تعيين العربية كافتراضي
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            updateLanguage();
-            setupNetworkListeners();
-            listenToFirestore();
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('authView').style.display = 'none';
+                document.getElementById('appView').style.display = 'block';
+                loadData();
+            } else {
+                currentUser = null;
+                document.getElementById('authView').style.display = 'flex';
+                document.getElementById('appView').style.display = 'none';
+            }
         });
 
-        function toggleLanguage() {
-            currentLang = currentLang === 'en' ? 'ar' : 'en';
-            localStorage.setItem('debtTrackerLang', currentLang);
-            updateLanguage();
-            renderCustomers();
+        function emailLogin() {
+            const email = document.getElementById('emailInput').value;
+            const pass = document.getElementById('passwordInput').value;
+            if(!email || !pass) return alert("أدخل البريد وكلمة المرور");
+            
+            auth.signInWithEmailAndPassword(email, pass)
+                .catch(err => {
+                    if(err.code === 'auth/user-not-found') {
+                        auth.createUserWithEmailAndPassword(email, pass).catch(e => alert(e.message));
+                    } else { alert("خطأ في تسجيل الدخول: " + err.message); }
+                });
         }
 
-        function updateLanguage() {
-            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
-            document.documentElement.lang = currentLang;
-            document.querySelectorAll('[data-en]').forEach(el => {
-                el.textContent = currentLang === 'ar' ? el.getAttribute('data-ar') : el.getAttribute('data-en');
-            });
-            document.getElementById('appTitle').textContent = currentLang === 'ar' ? 'متتبع الديون' : 'Debt Tracker';
-        }
+        function logout() { auth.signOut(); }
 
-        // الاستماع المباشر للتغيرات من قاعدة البيانات
-        function listenToFirestore() {
-            db.collection("customers").onSnapshot(snapshot => {
+        function loadData() {
+            db.collection('users').doc(currentUser.uid).collection('customers').onSnapshot(snapshot => {
                 customers = [];
-                let pendingCount = 0;
-                
+                let totalD = 0;
                 snapshot.forEach(doc => {
-                    const data = doc.data();
+                    let data = doc.data();
                     data.id = doc.id;
-                    // فحص إذا كانت هذه البيانات مسجلة محلياً ولم ترفع للسحابة بعد
-                    data.isPending = doc.metadata.hasPendingWrites; 
-                    if (data.isPending) pendingCount++;
                     customers.push(data);
                 });
-                
-                document.getElementById('pendingSync').textContent = pendingCount;
-                renderCustomers();
-                updateStats();
-                if (currentCustomerId) renderDebtsTable();
+                renderDashboard();
+                if(currentCustomerId) renderDetail();
             });
         }
 
-        function renderCustomers(filtered = null) {
-            const container = document.getElementById('customersContainer');
-            const display = filtered || customers;
-            
-            container.innerHTML = display.map(customer => {
-                const total = customer.debts.reduce((sum, d) => sum + parseFloat(d.amount), 0);
-                const syncStatusClass = customer.isPending ? 'pending' : 'synced';
-                const syncStatusText = customer.isPending ? (currentLang==='ar'?'في الانتظار':'Pending') : (currentLang==='ar'?'تم الحفظ':'Synced');
-                
-                return `<div class="customer-card" onclick="showCustomerDetail('${customer.id}')">
-                    <div class="customer-header">
-                        <div class="customer-name">${customer.name}</div>
+        function calcCustomerTotal(cust) {
+            if(!cust.transactions) return 0;
+            return cust.transactions.reduce((sum, t) => {
+                return t.type === 'debt' ? sum + Number(t.amount) : sum - Number(t.amount);
+            }, 0);
+        }
+
+        function renderDashboard() {
+            let totalOverall = 0;
+            const list = document.getElementById('customersList');
+            list.innerHTML = customers.map(c => {
+                const total = calcCustomerTotal(c);
+                totalOverall += total;
+                return `
+                <div class="customer-card" onclick="openCustomer('${c.id}')">
+                    <div class="customer-info">
+                        <h3>${c.name}</h3>
+                        <div style="color:var(--gray); font-size:0.8rem;">عمليات: ${c.transactions ? c.transactions.length : 0}</div>
                     </div>
-                    <div class="customer-debt">${total.toFixed(2)} EGP</div>
-                    <div class="customer-meta">
-                        <span><i class="fas fa-shopping-bag"></i> ${customer.debts.length}</span>
-                        <span class="sync-status ${syncStatusClass}"><i class="fas ${customer.isPending ? 'fa-clock' : 'fa-check'}"></i> ${syncStatusText}</span>
-                    </div>
+                    <div class="customer-debt">${total}</div>
                 </div>`;
             }).join('');
+            
+            document.getElementById('totalCustomers').innerText = customers.length;
+            document.getElementById('totalDebt').innerText = totalOverall;
         }
 
-        async function addCustomer() {
-            const name = document.getElementById('newCustomerName').value.trim();
-            const product = document.getElementById('newCustomerProduct').value.trim();
-            const amount = parseFloat(document.getElementById('newCustomerAmount').value);
-            
-            if (!name) return showToast(currentLang === 'ar' ? 'أدخل الاسم' : 'Enter name', 'error');
+        function openCustomer(id) {
+            currentCustomerId = id;
+            document.getElementById('dashboardView').style.display = 'none';
+            document.getElementById('detailView').style.display = 'block';
+            document.getElementById('mainFab').classList.add('hidden');
+            renderDetail();
+        }
 
-            const newDocRef = db.collection("customers").doc();
-            const customerData = { name: name, debts: [] };
+        function goBack() {
+            currentCustomerId = null;
+            document.getElementById('detailView').style.display = 'none';
+            document.getElementById('dashboardView').style.display = 'block';
+            document.getElementById('mainFab').classList.remove('hidden');
+        }
+
+        function renderDetail() {
+            const c = customers.find(x => x.id === currentCustomerId);
+            if(!c) return goBack();
             
-            if (product && amount > 0) {
-                customerData.debts.push({ id: Date.now().toString(), product: product, amount: amount, date: new Date().toISOString() });
+            document.getElementById('customerNameTitle').innerText = c.name;
+            document.getElementById('customerTotalDebt').innerText = calcCustomerTotal(c);
+            
+            const list = document.getElementById('debtsList');
+            if(!c.transactions || c.transactions.length === 0) {
+                list.innerHTML = '<div style="text-align:center; color:var(--gray); padding:20px;">لا توجد عمليات مسجلة</div>';
+                return;
             }
 
-            closeModal('addCustomerModal');
-            document.getElementById('newCustomerName').value = '';
-            document.getElementById('newCustomerProduct').value = '';
-            document.getElementById('newCustomerAmount').value = '';
-
-            try { await newDocRef.set(customerData); showToast('تم الحفظ', 'success'); } 
-            catch (e) { showToast('تم الحفظ محلياً (بدون إنترنت)', 'info'); }
-        }
-
-        function showCustomerDetail(id) {
-            currentCustomerId = id;
-            const customer = customers.find(c => c.id === id);
-            document.getElementById('detailCustomerName').textContent = customer.name;
-            document.getElementById('detailView').classList.add('active');
-            document.getElementById('dashboardView').style.display = 'none';
-            document.getElementById('fabBtn').style.display = 'none';
-            renderDebtsTable();
-        }
-
-        function showDashboard() {
-            currentCustomerId = null;
-            document.getElementById('detailView').classList.remove('active');
-            document.getElementById('dashboardView').style.display = 'block';
-            document.getElementById('fabBtn').style.display = 'flex';
-        }
-
-        function renderDebtsTable() {
-            const customer = customers.find(c => c.id === currentCustomerId);
-            if (!customer) return;
-            const total = customer.debts.reduce((sum, d) => sum + parseFloat(d.amount), 0);
-            document.getElementById('detailTotalDebt').textContent = total.toFixed(2) + ' EGP';
+            const sorted = [...c.transactions].sort((a,b) => new Date(b.date) - new Date(a.date));
             
-            document.getElementById('debtsTableBody').innerHTML = customer.debts.map(debt => `
-                <tr>
-                    <td style="font-weight: 600;">${debt.product}</td>
-                    <td style="color: var(--secondary); font-weight: 700;">${debt.amount}</td>
-                    <td style="color: var(--gray); font-size: 0.9rem;">${new Date(debt.date).toLocaleDateString()}</td>
-                    <td><button onclick="deleteDebt('${debt.id}')" style="background:none;border:none;color:var(--danger);cursor:pointer;"><i class="fas fa-trash"></i></button></td>
-                </tr>
+            list.innerHTML = sorted.map(t => `
+                <div class="debt-item ${t.type}">
+                    <div>
+                        <div style="font-weight:bold;">${t.type === 'payment' ? 'دفعة مسددة' : t.item}</div>
+                        <div style="font-size:0.8rem; color:var(--gray);">${new Date(t.date).toLocaleString('ar-EG')}</div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:15px;">
+                        <span class="debt-amount">${t.type === 'payment' ? '-' : '+'}${t.amount}</span>
+                        <i class="fas fa-trash" style="color:rgba(255,255,255,0.3); cursor:pointer;" onclick="deleteTransaction('${t.id}')"></i>
+                    </div>
+                </div>
             `).join('');
         }
 
-        async function addDebt() {
-            const product = document.getElementById('debtProductName').value.trim();
-            const amount = parseFloat(document.getElementById('debtAmount').value);
-            if (!product || !amount) return;
+        async function addCustomer() {
+            const name = document.getElementById('custName').value;
+            const item = document.getElementById('custItem').value;
+            const amt = document.getElementById('custAmount').value;
+            if(!name) return alert("الاسم مطلوب");
 
-            const customer = customers.find(c => c.id === currentCustomerId);
-            customer.debts.push({ id: Date.now().toString(), product: product, amount: amount, date: new Date().toISOString() });
+            let trans = [];
+            if(item && amt) trans.push({ id: Date.now().toString(), type: 'debt', item: item, amount: Number(amt), date: new Date().toISOString() });
 
-            closeModal('addDebtModal');
-            document.getElementById('debtProductName').value = '';
-            document.getElementById('debtAmount').value = '';
-
-            try { await db.collection("customers").doc(currentCustomerId).set({ debts: customer.debts }, { merge: true }); } 
-            catch (e) { showToast('تم الحفظ محلياً', 'info'); }
+            await db.collection('users').doc(currentUser.uid).collection('customers').add({ name: name, transactions: trans });
+            hideModal('customerModal');
+            document.getElementById('custName').value = ''; document.getElementById('custItem').value = ''; document.getElementById('custAmount').value = '';
         }
 
-        async function deleteDebt(debtId) {
-            if (!confirm('متأكد من حذف هذا الدين؟')) return;
-            const customer = customers.find(c => c.id === currentCustomerId);
-            customer.debts = customer.debts.filter(d => d.id !== debtId);
-            try { await db.collection("customers").doc(currentCustomerId).set({ debts: customer.debts }, { merge: true }); } 
-            catch (e) {}
+        async function addTransaction(type) {
+            const amtId = type === 'debt' ? 'debtAmount' : 'paymentAmount';
+            const itemId = type === 'debt' ? 'debtItem' : null;
+            const amt = document.getElementById(amtId).value;
+            const item = itemId ? document.getElementById(itemId).value : 'تسديد';
+            
+            if(!amt || amt <= 0) return alert("أدخل مبلغ صحيح");
+            
+            const c = customers.find(x => x.id === currentCustomerId);
+            const newTrans = { id: Date.now().toString(), type: type, item: item, amount: Number(amt), date: new Date().toISOString() };
+            
+            let transList = c.transactions || [];
+            transList.push(newTrans);
+            
+            await db.collection('users').doc(currentUser.uid).collection('customers').doc(currentCustomerId).update({ transactions: transList });
+            hideModal(type === 'debt' ? 'debtModal' : 'paymentModal');
+            document.getElementById(amtId).value = ''; if(itemId) document.getElementById(itemId).value = '';
         }
 
-        async function deleteCustomer() {
-            if (!confirm('حذف العميل نهائياً؟')) return;
-            const id = currentCustomerId;
-            showDashboard();
-            try { await db.collection("customers").doc(id).delete(); showToast('تم الحذف', 'success'); } 
-            catch (e) {}
+        async function deleteTransaction(tid) {
+            if(!confirm("حذف هذه العملية؟")) return;
+            const c = customers.find(x => x.id === currentCustomerId);
+            const newList = c.transactions.filter(t => t.id !== tid);
+            await db.collection('users').doc(currentUser.uid).collection('customers').doc(currentCustomerId).update({ transactions: newList });
         }
 
-        function updateStats() {
-            document.getElementById('totalCustomers').textContent = customers.length;
-            const totalDebt = customers.reduce((s, c) => s + c.debts.reduce((ds, d) => ds + parseFloat(d.amount), 0), 0);
-            document.getElementById('totalDebt').textContent = totalDebt.toFixed(2);
-        }
+        function showModal(id) { document.getElementById(id).classList.add('active'); }
+        function hideModal(id) { document.getElementById(id).classList.remove('active'); }
 
-        function searchCustomers() {
-            const q = document.getElementById('searchInput').value.toLowerCase();
-            renderCustomers(q ? customers.filter(c => c.name.toLowerCase().includes(q)) : null);
-        }
-
-        function openAddCustomerModal() { document.getElementById('addCustomerModal').classList.add('active'); }
-        function openAddDebtModal() { document.getElementById('addDebtModal').classList.add('active'); }
-        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-        
-        function syncData() {
-            const icon = document.getElementById('syncIcon');
-            icon.style.animation = 'spin 1s ease';
-            setTimeout(() => { 
-                icon.style.animation = '';
-                showToast(navigator.onLine ? 'المزامنة تعمل تلقائياً مع السحابة' : 'أنت في وضع الأوفلاين حالياً', navigator.onLine ? 'success' : 'warning');
-            }, 1000);
-        }
-
-        function setupNetworkListeners() {
-            const status = document.getElementById('connectionStatus');
-            const updateStatus = (online) => {
-                status.className = `connection-status show ${online ? 'online' : 'offline'}`;
-                status.innerHTML = `<i class="fas fa-wifi${online?'':'-slash'}"></i> <span>${online?'متصل بالإنترنت':'وضع الأوفلاين'}</span>`;
-                if(online) setTimeout(() => status.classList.remove('show'), 3000);
-            };
-            window.addEventListener('online', () => updateStatus(true));
-            window.addEventListener('offline', () => updateStatus(false));
-            if (!navigator.onLine) updateStatus(false);
-        }
-
-        function showToast(msg, type='info') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `toast`; toast.style.borderLeft = `4px solid var(--${type})`;
-            toast.innerHTML = `<div>${msg}</div>`;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(customers));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href",     dataStr);
+            downloadAnchorNode.setAttribute("download", "DebtTracker_Backup.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
         }
     </script>
 </body>
 </html>
-
