@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "998280256788",
+    "project_id": "aboroqya-4a460",
+    "storage_bucket": "aboroqya-4a460.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:998280256788:android:105cfdff77e5dd19d3b601",
+        "android_client_info": {
+          "package_name": "Com.ejramgamal.json"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCcKXCMRlVWV7jo53v5EBXYErcq9-d4slQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
