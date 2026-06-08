@@ -31,6 +31,11 @@ jobs:
           npx cap add android
           npx cap sync android
 
+      - name: Inject Permanent Keystore
+        run: |
+          mkdir -p ~/.android
+          cp my-app-key.keystore ~/.android/debug.keystore
+
       - name: Add Firebase Config
         run: |
           mkdir -p android/app
@@ -63,12 +68,6 @@ jobs:
             ],
             "configuration_version": "1"
           }' > android/app/google-services.json
-
-      - name: Extract Firebase Keys (SHA-1 & SHA-256)
-        run: |
-          cd android
-          chmod +x gradlew
-          ./gradlew signingReport
 
       - name: Build APK
         run: |
