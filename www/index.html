@@ -2,9 +2,9 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Debt Tracker - دفتر الديون</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+    <title>Debt Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -17,54 +17,66 @@
             --dark: #0f172a; --dark-light: #1e293b; --light: #f8fafc; --gray: #94a3b8;
             --radius: 16px; --radius-sm: 12px; --transition: all 0.3s ease;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-        body { background: linear-gradient(135deg, #0f172a, #1e1b4b, #312e81); min-height: 100vh; color: var(--light); overflow-x: hidden; padding-top: env(safe-area-inset-top); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: linear-gradient(135deg, #0f172a, #1e1b4b, #312e81); min-height: 100vh; color: var(--light); overflow-x: hidden; padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
         
+        /* شاشات الدخول والتسجيل */
         #authView { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--dark); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-        .auth-card { background: rgba(255,255,255,0.03); padding: 35px 25px; border-radius: var(--radius); width: 100%; max-width: 380px; text-align: center; border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(15px); box-shadow: 0 15px 35px rgba(0,0,0,0.3); }
+        .auth-card { background: rgba(255,255,255,0.03); padding: 35px 25px; border-radius: var(--radius); width: 100%; max-width: 380px; text-align: center; border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(15px); box-shadow: 0 15px 35px rgba(0,0,0,0.3); position: relative; overflow: hidden; }
         .auth-card h2 { margin-bottom: 10px; color: var(--primary); font-size: 1.8rem; }
         .auth-input { width: 100%; padding: 14px; margin-bottom: 15px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: white; outline: none; transition: var(--transition); font-size: 0.95rem; }
-        .auth-input:focus { border-color: var(--primary); background: rgba(0,0,0,0.5); }
-        .btn { padding: 14px; border: none; border-radius: var(--radius-sm); font-weight: bold; cursor: pointer; transition: var(--transition); font-size: 0.95rem; width: 100%; }
-        .btn-main { background: var(--primary); color: white; }
-        .btn-main:hover { background: #4f46e5; }
+        .auth-input:focus { border-color: var(--primary); background: rgba(0,0,0,0.5); box-shadow: 0 0 10px rgba(99,102,241,0.2); }
+        .btn { padding: 14px; border: none; border-radius: var(--radius-sm); font-weight: bold; cursor: pointer; transition: var(--transition); font-size: 0.95rem; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-main { background: linear-gradient(to right, var(--primary), #4f46e5); color: white; box-shadow: 0 4px 15px rgba(99,102,241,0.3); }
+        .btn-main:active { transform: scale(0.98); }
         .btn-outline { background: transparent; color: white; border: 1px solid rgba(255,255,255,0.2); }
-        .btn-social { background: rgba(255,255,255,0.05); color: white; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; }
+        .btn-social { background: rgba(255,255,255,0.05); color: white; margin-bottom: 10px; }
         .btn-social.google { background: #db4437; border-color: transparent; }
         .btn-social.phone { background: var(--success); border-color: transparent; }
         
-        .header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .logo { font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        /* الواجهة الرئيسية */
+        .header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(15px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .logo { font-size: 1.4rem; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: flex; align-items: center; gap: 8px; }
         
-        .stats-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; padding: 20px; }
-        .stat-card { background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: var(--radius); text-align: center; border: 1px solid rgba(255,255,255,0.1); }
-        .stat-value { font-size: 1.8rem; font-weight: bold; margin: 10px 0; }
+        .search-container { padding: 15px 20px 0; }
+        .search-input { width: 100%; padding: 12px 15px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: white; outline: none; }
         
-        .customers-container { padding: 0 20px 80px; display: grid; gap: 15px; }
-        .customer-card { background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        .customer-info h3 { font-size: 1.2rem; }
+        .sync-badge { display: none; background: var(--warning); color: #fff; padding: 4px 8px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; margin-right: auto; margin-left: 10px; }
+        
+        .stats-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; padding: 20px; }
+        .stat-card { background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01)); padding: 20px; border-radius: var(--radius); text-align: center; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 8px 32px rgba(0,0,0,0.1); }
+        .stat-value { font-size: 1.8rem; font-weight: 800; margin: 10px 0; color: var(--light); }
+        
+        .customers-container { padding: 0 20px 80px; display: grid; gap: 12px; }
+        .customer-card { background: rgba(255, 255, 255, 0.03); padding: 18px; border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: var(--transition); }
+        .customer-card:active { background: rgba(255, 255, 255, 0.08); transform: scale(0.98); }
+        .customer-info h3 { font-size: 1.1rem; margin-bottom: 4px; }
         .customer-debt { font-size: 1.3rem; font-weight: bold; color: var(--secondary); }
         
-        #detailView { display: none; padding: 20px; padding-bottom: 90px; }
+        /* صفحة تفاصيل العميل */
+        #detailView { display: none; padding: 20px; padding-bottom: 90px; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .detail-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .total-box { text-align: center; padding: 20px; background: rgba(255,255,255,0.05); border-radius: var(--radius); margin-bottom: 20px; }
-        .total-amount { font-size: 2.5rem; color: var(--primary); font-weight: bold; }
+        .total-box { text-align: center; padding: 25px; background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01)); border-radius: var(--radius); margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
+        .total-amount { font-size: 2.8rem; color: var(--primary); font-weight: 800; text-shadow: 0 4px 15px rgba(99,102,241,0.3); }
         
-        .debt-item { background: rgba(0,0,0,0.2); padding: 15px; border-radius: var(--radius-sm); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-right: 4px solid var(--danger); }
-        .debt-item.payment { border-right-color: var(--success); }
-        .debt-amount { font-weight: bold; font-size: 1.1rem; }
+        .debt-item { background: rgba(0,0,0,0.2); padding: 15px; border-radius: var(--radius-sm); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--danger); }
+        html[dir="rtl"] .debt-item { border-left: none; border-right: 4px solid var(--danger); }
+        .debt-item.payment { border-color: var(--success); }
+        .debt-amount { font-weight: 800; font-size: 1.2rem; }
         .debt-item.payment .debt-amount { color: var(--success); }
         .debt-item.debt .debt-amount { color: var(--danger); }
+        .action-icons i { color: var(--gray); padding: 8px; font-size: 1.1rem; transition: var(--transition); cursor: pointer; }
+        .action-icons i:hover { color: white; }
         
-        .fab { position: fixed; bottom: 30px; left: 30px; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; font-size: 1.5rem; border: none; cursor: pointer; box-shadow: 0 5px 20px rgba(0,0,0,0.3); transition: var(--transition); display: flex; align-items: center; justify-content: center; z-index: 90; }
+        .fab { position: fixed; bottom: 30px; left: 30px; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; font-size: 1.5rem; border: none; cursor: pointer; box-shadow: 0 8px 25px rgba(236,72,153,0.4); transition: var(--transition); display: flex; align-items: center; justify-content: center; z-index: 90; }
+        html[dir="ltr"] .fab { left: auto; right: 30px; }
         .fab.hidden { transform: scale(0); opacity: 0; pointer-events: none; }
         
-        .action-buttons { display: flex; gap: 10px; margin-top: 20px; }
-        .btn-action { flex: 1; padding: 15px; border-radius: var(--radius-sm); border: none; color: white; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
-        
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: var(--transition); }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: var(--transition); }
         .modal.active { opacity: 1; pointer-events: auto; }
-        .modal-content { background: var(--dark-light); padding: 25px; border-radius: var(--radius); width: 90%; max-width: 400px; }
+        .modal-content { background: var(--dark-light); padding: 25px; border-radius: var(--radius); width: 90%; max-width: 400px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.4); transform: translateY(20px); transition: var(--transition); }
+        .modal.active .modal-content { transform: translateY(0); }
         
         .copyright { text-align: center; padding: 20px; color: rgba(255,255,255,0.3); font-size: 0.85rem; margin-top: 20px; }
         .copyright span { color: var(--primary); font-weight: bold; }
@@ -74,48 +86,51 @@
 
     <div id="authView">
         <div class="auth-card">
-            <h2 class="logo"><i class="fas fa-wallet"></i> دفتر الديون</h2>
-            <p style="margin-bottom: 25px; color: var(--gray); font-size: 0.9rem;">مزامنة سحابية آمنة لبياناتك</p>
+            <h2 class="logo" style="justify-content:center; margin-bottom: 5px;"><i class="fas fa-wallet"></i> <span data-ar="دفتر الديون" data-en="Debt Tracker">دفتر الديون</span></h2>
+            <p style="margin-bottom: 25px; color: var(--gray); font-size: 0.9rem;" data-ar="مزامنة سحابية آمنة لبياناتك" data-en="Secure cloud sync for your data">مزامنة سحابية آمنة لبياناتك</p>
             
-            <input type="email" id="emailInput" class="auth-input" placeholder="البريد الإلكتروني" autocomplete="off" autocorrect="off" spellcheck="false" data-gramm="false">
-            <input type="password" id="passwordInput" class="auth-input" placeholder="كلمة المرور" autocomplete="new-password" data-gramm="false">
-            
-            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                <button class="btn btn-main" onclick="emailLogin()">دخول</button>
-                <button class="btn btn-outline" onclick="emailRegister()">حساب جديد</button>
+            <div id="loginForm">
+                <input type="email" id="loginEmail" class="auth-input" data-placeholder-ar="البريد الإلكتروني" data-placeholder-en="Email Address" autocomplete="off" autocorrect="off" spellcheck="false" data-gramm="false">
+                <input type="password" id="loginPass" class="auth-input" data-placeholder-ar="كلمة المرور" data-placeholder-en="Password" autocomplete="new-password" data-gramm="false">
+                <button class="btn btn-main" style="margin-bottom: 10px;" onclick="emailLogin()" data-ar="تسجيل الدخول" data-en="Login">تسجيل الدخول</button>
+                <button class="btn btn-outline" onclick="toggleAuthForm()" data-ar="إنشاء حساب جديد" data-en="Create New Account">إنشاء حساب جديد</button>
+                
+                <div style="display: flex; align-items: center; margin: 20px 0; color: var(--gray); font-size: 0.85rem;">
+                    <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
+                    <span style="padding: 0 10px;" data-ar="أو الدخول بواسطة" data-en="Or login with">أو الدخول بواسطة</span>
+                    <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
+                </div>
+                
+                <button class="btn btn-social google" onclick="googleLogin()"><i class="fab fa-google"></i> <span data-ar="حساب جوجل" data-en="Google Account">حساب جوجل</span></button>
+                <button class="btn btn-social phone" onclick="openPhoneAuth()"><i class="fas fa-phone"></i> <span data-ar="رقم الهاتف" data-en="Phone Number">رقم الهاتف</span></button>
             </div>
-            
-            <div style="display: flex; align-items: center; margin: 20px 0; color: var(--gray); font-size: 0.85rem;">
-                <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
-                <span style="padding: 0 10px;">أو الدخول بواسطة</span>
-                <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
+
+            <div id="registerForm" style="display: none;">
+                <input type="email" id="regEmail" class="auth-input" data-placeholder-ar="البريد الإلكتروني الجديد" data-placeholder-en="New Email" autocomplete="off" data-gramm="false">
+                <input type="password" id="regPass" class="auth-input" data-placeholder-ar="كلمة مرور قوية" data-placeholder-en="Strong Password" autocomplete="new-password" data-gramm="false">
+                <button class="btn btn-main" style="margin-bottom: 10px; background: var(--success);" onclick="emailRegister()" data-ar="تأكيد الإنشاء" data-en="Confirm Registration">تأكيد الإنشاء</button>
+                <button class="btn btn-outline" onclick="toggleAuthForm()" data-ar="العودة للدخول" data-en="Back to Login">العودة للدخول</button>
             </div>
-            
-            <button class="btn btn-social google" onclick="googleLogin()"><i class="fab fa-google"></i> حساب جوجل</button>
-            <button class="btn btn-social phone" onclick="openPhoneAuth()"><i class="fas fa-phone"></i> رقم الهاتف</button>
         </div>
         <div class="copyright">Developed by <span>Ejram</span> &copy; 2026</div>
     </div>
 
     <div class="modal" id="phoneAuthModal">
         <div class="modal-content">
-            <h3 style="margin-bottom: 20px; text-align:center;">الدخول برقم الهاتف</h3>
-            
+            <h3 style="margin-bottom: 20px; text-align:center;" data-ar="الدخول برقم الهاتف" data-en="Phone Login">الدخول برقم الهاتف</h3>
             <div id="phoneStep1">
-                <input type="tel" id="phoneNumber" class="auth-input" placeholder="مثال: +201012345678" dir="ltr" style="text-align:center;" autocomplete="off" data-gramm="false">
+                <input type="tel" id="phoneNumber" class="auth-input" placeholder="+201012345678" dir="ltr" style="text-align:center;" autocomplete="off" data-gramm="false">
                 <div id="recaptcha-container" style="margin-bottom: 15px; display:flex; justify-content:center;"></div>
                 <div style="display:flex; gap:10px;">
-                    <button class="btn btn-main" onclick="sendSmsCode()">إرسال الرمز</button>
-                    <button class="btn btn-outline" onclick="hideModal('phoneAuthModal')">إلغاء</button>
+                    <button class="btn btn-main" onclick="sendSmsCode()" data-ar="إرسال" data-en="Send">إرسال</button>
+                    <button class="btn btn-outline" onclick="hideModal('phoneAuthModal')" data-ar="إلغاء" data-en="Cancel">إلغاء</button>
                 </div>
             </div>
-
             <div id="phoneStep2" style="display: none;">
-                <p style="text-align:center; color:var(--gray); margin-bottom:15px;">تم إرسال رمز التحقق إلى هاتفك</p>
-                <input type="number" id="smsCode" class="auth-input" placeholder="الرمز المكون من 6 أرقام" dir="ltr" style="text-align:center;" autocomplete="off" data-gramm="false">
+                <input type="number" id="smsCode" class="auth-input" placeholder="123456" dir="ltr" style="text-align:center;" autocomplete="off" data-gramm="false">
                 <div style="display:flex; gap:10px;">
-                    <button class="btn" style="background:var(--success); color:white;" onclick="verifySmsCode()">تأكيد الدخول</button>
-                    <button class="btn btn-outline" onclick="hideModal('phoneAuthModal')">إلغاء</button>
+                    <button class="btn btn-main" style="background:var(--success);" onclick="verifySmsCode()" data-ar="تأكيد" data-en="Verify">تأكيد</button>
+                    <button class="btn btn-outline" onclick="hideModal('phoneAuthModal')" data-ar="إلغاء" data-en="Cancel">إلغاء</button>
                 </div>
             </div>
         </div>
@@ -123,24 +138,28 @@
 
     <div id="appView" style="display: none;">
         <header class="header">
-            <div class="logo"><i class="fas fa-wallet"></i> دفتر الديون</div>
+            <div class="logo"><i class="fas fa-wallet"></i> <span data-ar="دفتر الديون" data-en="Debt Tracker">دفتر الديون</span></div>
+            <div class="sync-badge" id="syncBadge"><i class="fas fa-sync fa-spin"></i> <span data-ar="مزامنة..." data-en="Syncing...">مزامنة...</span></div>
             <div style="display: flex; gap: 15px;">
-                <button style="background:none; border:none; color:white; font-size:1.2rem;" onclick="exportData()"><i class="fas fa-file-export"></i></button>
-                <button style="background:none; border:none; color:white; font-size:1.2rem;" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button>
+                <button style="background:none; border:none; color:white; font-size:1.2rem; cursor:pointer;" onclick="toggleFullScreen()"><i class="fas fa-expand"></i></button>
+                <button style="background:none; border:none; color:white; font-size:1.2rem; cursor:pointer;" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button>
             </div>
         </header>
 
         <div id="dashboardView">
+            <div class="search-container">
+                <input type="search" id="searchInput" class="search-input" data-placeholder-ar="ابحث عن اسم العميل..." data-placeholder-en="Search customer name..." oninput="filterCustomers()">
+            </div>
             <div class="stats-container">
                 <div class="stat-card">
-                    <i class="fas fa-users" style="color:var(--primary); font-size: 2rem;"></i>
+                    <i class="fas fa-users" style="color:var(--primary); font-size: 2.2rem; margin-bottom:5px;"></i>
                     <div class="stat-value" id="totalCustomers">0</div>
-                    <div>إجمالي العملاء</div>
+                    <div style="color:var(--gray);" data-ar="إجمالي العملاء" data-en="Total Customers">إجمالي العملاء</div>
                 </div>
                 <div class="stat-card">
-                    <i class="fas fa-money-bill-wave" style="color:var(--secondary); font-size: 2rem;"></i>
+                    <i class="fas fa-money-bill-wave" style="color:var(--secondary); font-size: 2.2rem; margin-bottom:5px;"></i>
                     <div class="stat-value" id="totalDebt">0</div>
-                    <div>إجمالي الديون</div>
+                    <div style="color:var(--gray);" data-ar="إجمالي الديون" data-en="Total Debt">إجمالي الديون</div>
                 </div>
             </div>
             <div class="customers-container" id="customersList"></div>
@@ -149,18 +168,21 @@
 
         <div id="detailView">
             <div class="detail-header">
-                <h2 id="customerNameTitle">اسم العميل</h2>
-                <button style="background:rgba(255,255,255,0.1); border:none; padding:10px 15px; border-radius:10px; color:white;" onclick="goBack()"><i class="fas fa-arrow-right"></i> رجوع</button>
+                <h2 id="customerNameTitle">Customer Name</h2>
+                <div style="display:flex; gap:10px;">
+                    <button style="background:rgba(239, 68, 68, 0.2); border:none; padding:8px 12px; border-radius:8px; color:var(--danger); cursor:pointer;" onclick="deleteCustomer()"><i class="fas fa-trash"></i></button>
+                    <button style="background:rgba(255,255,255,0.1); border:none; padding:8px 15px; border-radius:8px; color:white; cursor:pointer; display:flex; align-items:center; gap:5px;" onclick="goBack()"><i class="fas fa-arrow-left"></i> <span data-ar="رجوع" data-en="Back">رجوع</span></button>
+                </div>
             </div>
             <div class="total-box">
-                <div>الرصيد المتبقي</div>
+                <div style="color:var(--gray); font-size:1.1rem; margin-bottom:5px;" data-ar="المبلغ المستحق" data-en="Amount Due">المبلغ المستحق</div>
                 <div class="total-amount" id="customerTotalDebt">0</div>
             </div>
-            <div class="action-buttons">
-                <button class="btn-action" style="background:var(--danger);" onclick="showModal('debtModal')"><i class="fas fa-plus"></i> إضافة دين</button>
-                <button class="btn-action" style="background:var(--success);" onclick="showModal('paymentModal')"><i class="fas fa-hand-holding-usd"></i> تسديد دفعة</button>
+            <div style="display: flex; gap: 10px; margin-bottom: 25px;">
+                <button class="btn" style="background:var(--danger);" onclick="showModal('debtModal')"><i class="fas fa-plus"></i> <span data-ar="إضافة دين" data-en="Add Debt">إضافة دين</span></button>
+                <button class="btn" style="background:var(--success);" onclick="showModal('paymentModal')"><i class="fas fa-hand-holding-usd"></i> <span data-ar="تسديد دفعة" data-en="Add Payment">تسديد دفعة</span></button>
             </div>
-            <h3 style="margin: 20px 0 10px;">سجل العمليات</h3>
+            <h3 style="margin: 0 0 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom:10px;" data-ar="سجل العمليات" data-en="Transactions History">سجل العمليات</h3>
             <div id="debtsList"></div>
         </div>
     </div>
@@ -169,42 +191,74 @@
 
     <div class="modal" id="customerModal">
         <div class="modal-content">
-            <h3 style="margin-bottom: 20px;">إضافة عميل جديد</h3>
-            <input type="text" id="custName" class="auth-input" placeholder="اسم العميل" autocomplete="off" data-gramm="false">
-            <input type="text" id="custItem" class="auth-input" placeholder="المنتج الأول (اختياري)" autocomplete="off" data-gramm="false">
-            <input type="number" id="custAmount" class="auth-input" placeholder="المبلغ" autocomplete="off" data-gramm="false">
-            <div style="display:flex; gap:10px; margin-top:20px;">
-                <button class="btn btn-main" onclick="addCustomer()">حفظ</button>
-                <button class="btn btn-outline" onclick="hideModal('customerModal')">إلغاء</button>
+            <h3 style="margin-bottom: 20px;" data-ar="إضافة عميل جديد" data-en="Add New Customer">إضافة عميل جديد</h3>
+            <input type="text" id="custName" class="auth-input" data-placeholder-ar="اسم العميل" data-placeholder-en="Customer Name" autocomplete="off" data-gramm="false">
+            <input type="text" id="custItem" class="auth-input" data-placeholder-ar="المنتج الأول (اختياري)" data-placeholder-en="First Item (Optional)" autocomplete="off" data-gramm="false">
+            <input type="number" id="custAmount" class="auth-input" data-placeholder-ar="المبلغ" data-placeholder-en="Amount" autocomplete="off" data-gramm="false">
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <button class="btn btn-main" onclick="addCustomer()" data-ar="حفظ" data-en="Save">حفظ</button>
+                <button class="btn btn-outline" onclick="hideModal('customerModal')" data-ar="إلغاء" data-en="Cancel">إلغاء</button>
             </div>
         </div>
     </div>
 
     <div class="modal" id="debtModal">
         <div class="modal-content">
-            <h3 style="margin-bottom: 20px;">تسجيل دين جديد</h3>
-            <input type="text" id="debtItem" class="auth-input" placeholder="اسم المنتج" autocomplete="off" data-gramm="false">
-            <input type="number" id="debtAmount" class="auth-input" placeholder="المبلغ" autocomplete="off" data-gramm="false">
-            <div style="display:flex; gap:10px; margin-top:20px;">
-                <button class="btn" style="background:var(--danger); color:white;" onclick="addTransaction('debt')">تسجيل الدين</button>
-                <button class="btn btn-outline" onclick="hideModal('debtModal')">إلغاء</button>
+            <h3 style="margin-bottom: 20px;" data-ar="تسجيل دين جديد" data-en="Record New Debt">تسجيل دين جديد</h3>
+            <input type="text" id="debtItem" class="auth-input" data-placeholder-ar="البيان / المنتج" data-placeholder-en="Item / Description" autocomplete="off" data-gramm="false">
+            <input type="number" id="debtAmount" class="auth-input" data-placeholder-ar="المبلغ" data-placeholder-en="Amount" autocomplete="off" data-gramm="false">
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <button class="btn" style="background:var(--danger); color:white;" onclick="addTransaction('debt')" data-ar="حفظ الدين" data-en="Save Debt">حفظ الدين</button>
+                <button class="btn btn-outline" onclick="hideModal('debtModal')" data-ar="إلغاء" data-en="Cancel">إلغاء</button>
             </div>
         </div>
     </div>
 
     <div class="modal" id="paymentModal">
         <div class="modal-content">
-            <h3 style="margin-bottom: 20px; color:var(--success);">تسديد دفعة مالية</h3>
-            <input type="number" id="paymentAmount" class="auth-input" placeholder="المبلغ المدفوع" autocomplete="off" data-gramm="false">
-            <div style="display:flex; gap:10px; margin-top:20px;">
-                <button class="btn" style="background:var(--success); color:white;" onclick="addTransaction('payment')">تأكيد الدفع</button>
-                <button class="btn btn-outline" onclick="hideModal('paymentModal')">إلغاء</button>
+            <h3 style="margin-bottom: 20px; color:var(--success);" data-ar="تسديد دفعة مالية" data-en="Record Payment">تسديد دفعة مالية</h3>
+            <input type="number" id="paymentAmount" class="auth-input" data-placeholder-ar="المبلغ المدفوع" data-placeholder-en="Paid Amount" autocomplete="off" data-gramm="false">
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <button class="btn" style="background:var(--success); color:white;" onclick="addTransaction('payment')" data-ar="تأكيد الدفع" data-en="Confirm Payment">تأكيد الدفع</button>
+                <button class="btn btn-outline" onclick="hideModal('paymentModal')" data-ar="إلغاء" data-en="Cancel">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 20px; color:var(--warning);" data-ar="تعديل العملية" data-en="Edit Transaction">تعديل العملية</h3>
+            <input type="text" id="editItem" class="auth-input" data-placeholder-ar="البيان / المنتج" data-placeholder-en="Item / Description" autocomplete="off" data-gramm="false">
+            <input type="number" id="editAmount" class="auth-input" data-placeholder-ar="المبلغ" data-placeholder-en="Amount" autocomplete="off" data-gramm="false">
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <button class="btn" style="background:var(--warning); color:white;" onclick="saveEdit()" data-ar="تحديث" data-en="Update">تحديث</button>
+                <button class="btn btn-outline" onclick="hideModal('editModal')" data-ar="إلغاء" data-en="Cancel">إلغاء</button>
             </div>
         </div>
     </div>
 
     <script>
-        // تمت إضافة authDomain لحل مشكلة تسجيل الدخول
+        /* --- محرك اللغة التلقائي --- */
+        const isArabic = navigator.language.toLowerCase().startsWith('ar');
+        function applyLanguage() {
+            document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
+            document.querySelectorAll('[data-ar]').forEach(el => { el.innerHTML = isArabic ? el.getAttribute('data-ar') : el.getAttribute('data-en'); });
+            document.querySelectorAll('[data-placeholder-ar]').forEach(el => { el.placeholder = isArabic ? el.getAttribute('data-placeholder-ar') : el.getAttribute('data-placeholder-en'); });
+            
+            // قلب الأيقونات حسب الاتجاه
+            if(!isArabic) {
+                document.querySelectorAll('.fa-arrow-left').forEach(i => i.classList.replace('fa-arrow-left', 'fa-arrow-right'));
+            }
+        }
+        applyLanguage();
+
+        // فورمات الأرقام والتواريخ لتكون إنجليزية دائماً
+        function formatNumber(num) { return new Intl.NumberFormat('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(num); }
+        function formatDate(isoStr) { 
+            return new Intl.DateTimeFormat('en-US', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true }).format(new Date(isoStr)); 
+        }
+
+        /* --- إعدادات فايربيس --- */
         const firebaseConfig = {
             apiKey: "AIzaSyCcKXCMRlVWV7jo53v5EBXYErcq9-d4slQ",
             authDomain: "aboroqya-4a460.firebaseapp.com",
@@ -215,11 +269,12 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
-        db.enablePersistence().catch(err => console.log("Offline mode error", err));
+        db.enablePersistence({ synchronizeTabs: true }).catch(err => console.log("Offline mode error", err));
 
         let currentUser = null;
         let customers = [];
         let currentCustomerId = null;
+        let editTransactionId = null;
         let confirmationResult = null;
 
         auth.onAuthStateChanged(user => {
@@ -236,105 +291,100 @@
             }
         });
 
+        /* --- واجهة التسجيل الدخول --- */
+        function toggleAuthForm() {
+            const login = document.getElementById('loginForm');
+            const reg = document.getElementById('registerForm');
+            if(login.style.display === 'none') { login.style.display = 'block'; reg.style.display = 'none'; } 
+            else { login.style.display = 'none'; reg.style.display = 'block'; }
+        }
+
         function emailLogin() {
-            const email = document.getElementById('emailInput').value;
-            const pass = document.getElementById('passwordInput').value;
-            if(!email || !pass) return alert("الرجاء إدخال البريد الإلكتروني وكلمة المرور أولاً");
-            auth.signInWithEmailAndPassword(email, pass).catch(err => alert("خطأ: تأكد من صحة البيانات"));
+            const email = document.getElementById('loginEmail').value;
+            const pass = document.getElementById('loginPass').value;
+            if(!email || !pass) return alert(isArabic ? "أدخل البيانات" : "Enter credentials");
+            auth.signInWithEmailAndPassword(email, pass).catch(err => alert(err.message));
         }
 
         function emailRegister() {
-            const email = document.getElementById('emailInput').value;
-            const pass = document.getElementById('passwordInput').value;
-            if(!email || !pass) return alert("الرجاء إدخال البريد الإلكتروني وكلمة المرور في المربعات أولاً لإنشاء الحساب");
+            const email = document.getElementById('regEmail').value;
+            const pass = document.getElementById('regPass').value;
+            if(!email || !pass) return alert(isArabic ? "أدخل البيانات" : "Enter credentials");
             auth.createUserWithEmailAndPassword(email, pass)
-                .then(() => alert("تم إنشاء حسابك بنجاح!"))
-                .catch(err => alert("خطأ في الإنشاء: " + err.message));
+                .then(() => { alert(isArabic ? "تم الحساب بنجاح" : "Account Created"); toggleAuthForm(); })
+                .catch(err => alert(err.message));
         }
 
-        function googleLogin() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithRedirect(provider).catch(err => alert("خطأ في تسجيل الدخول عبر جوجل: " + err.message));
-        }
+        function googleLogin() { auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider()); }
+        function logout() { auth.signOut(); }
 
         function openPhoneAuth() {
             showModal('phoneAuthModal');
-            document.getElementById('phoneStep1').style.display = 'block';
-            document.getElementById('phoneStep2').style.display = 'none';
-            
-            if(!window.recaptchaVerifier) {
-                window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-                    'size': 'normal'
-                });
-                window.recaptchaVerifier.render();
-            }
+            document.getElementById('phoneStep1').style.display = 'block'; document.getElementById('phoneStep2').style.display = 'none';
+            if(!window.recaptchaVerifier) { window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 'size': 'normal' }); window.recaptchaVerifier.render(); }
         }
 
         function sendSmsCode() {
             const number = document.getElementById('phoneNumber').value;
-            if(!number.startsWith('+')) return alert("الرجاء كتابة رقم الهاتف مع رمز الدولة (مثال: +2010...)");
-            
-            const appVerifier = window.recaptchaVerifier;
-            auth.signInWithPhoneNumber(number, appVerifier)
-                .then((confirmation) => {
-                    confirmationResult = confirmation;
-                    document.getElementById('phoneStep1').style.display = 'none';
-                    document.getElementById('phoneStep2').style.display = 'block';
-                }).catch((error) => {
-                    alert("تعذر إرسال الرمز، تأكد من الرقم وحاول مجدداً.");
-                    if(window.recaptchaVerifier) window.recaptchaVerifier.render().then(wId => grecaptcha.reset(wId));
-                });
+            if(!number.startsWith('+')) return alert(isArabic ? "رقم غير صحيح" : "Invalid Number");
+            auth.signInWithPhoneNumber(number, window.recaptchaVerifier)
+                .then((res) => { confirmationResult = res; document.getElementById('phoneStep1').style.display = 'none'; document.getElementById('phoneStep2').style.display = 'block'; })
+                .catch((err) => { alert(err.message); if(window.recaptchaVerifier) window.recaptchaVerifier.render().then(wId => grecaptcha.reset(wId)); });
         }
-
         function verifySmsCode() {
             const code = document.getElementById('smsCode').value;
-            if(!code) return alert("أدخل الرمز أولاً");
-            
-            confirmationResult.confirm(code).catch((error) => {
-                alert("الرمز غير صحيح، حاول مرة أخرى.");
-            });
+            confirmationResult.confirm(code).catch(() => alert(isArabic ? "رمز خاطئ" : "Wrong Code"));
         }
 
-        function logout() { auth.signOut(); }
-
+        /* --- قاعدة البيانات (معالجة البق الخاص بالريستارت) --- */
         function loadData() {
-            db.collection('users').doc(currentUser.uid).collection('customers').onSnapshot(snapshot => {
-                customers = [];
-                snapshot.forEach(doc => {
-                    let data = doc.data();
-                    data.id = doc.id;
-                    customers.push(data);
-                });
-                renderDashboard();
+            db.collection('users').doc(currentUser.uid).collection('customers')
+              .onSnapshot({ includeMetadataChanges: true }, snapshot => {
+                
+                // إظهار وإخفاء زر المزامنة
+                let hasPending = snapshot.metadata.hasPendingWrites;
+                document.getElementById('syncBadge').style.display = hasPending ? 'block' : 'none';
+
+                let tempArr = [];
+                snapshot.forEach(doc => { let data = doc.data(); data.id = doc.id; tempArr.push(data); });
+                
+                // تحديث المتغير فقط إذا لم تكن البيانات فارغة بسبب بطء الذاكرة المؤقتة، أو إذا كانت فارغة فعلاً (لا يوجد عملاء)
+                customers = tempArr; 
+                
+                filterCustomers(); // تحديث الواجهة مع احترام شريط البحث
                 if(currentCustomerId) renderDetail();
             });
         }
 
         function calcCustomerTotal(cust) {
             if(!cust.transactions) return 0;
-            return cust.transactions.reduce((sum, t) => {
-                return t.type === 'debt' ? sum + Number(t.amount) : sum - Number(t.amount);
-            }, 0);
+            return cust.transactions.reduce((sum, t) => t.type === 'debt' ? sum + Number(t.amount) : sum - Number(t.amount), 0);
         }
 
-        function renderDashboard() {
-            let totalOverall = 0;
+        function filterCustomers() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
             const list = document.getElementById('customersList');
-            list.innerHTML = customers.map(c => {
+            let totalOverall = 0;
+            let count = 0;
+            
+            const filtered = customers.filter(c => c.name.toLowerCase().includes(query));
+            
+            list.innerHTML = filtered.map(c => {
                 const total = calcCustomerTotal(c);
                 totalOverall += total;
+                count++;
                 return `
                 <div class="customer-card" onclick="openCustomer('${c.id}')">
                     <div class="customer-info">
                         <h3>${c.name}</h3>
-                        <div style="color:var(--gray); font-size:0.8rem;">عمليات: ${c.transactions ? c.transactions.length : 0}</div>
+                        <div style="color:var(--gray); font-size:0.85rem;"><i class="fas fa-list"></i> ${c.transactions ? c.transactions.length : 0}</div>
                     </div>
-                    <div class="customer-debt">${total}</div>
+                    <div class="customer-debt">${formatNumber(total)}</div>
                 </div>`;
             }).join('');
             
-            document.getElementById('totalCustomers').innerText = customers.length;
-            document.getElementById('totalDebt').innerText = totalOverall;
+            document.getElementById('totalCustomers').innerText = formatNumber(count);
+            document.getElementById('totalDebt').innerText = formatNumber(totalOverall);
         }
 
         function openCustomer(id) {
@@ -357,11 +407,11 @@
             if(!c) return goBack();
             
             document.getElementById('customerNameTitle').innerText = c.name;
-            document.getElementById('customerTotalDebt').innerText = calcCustomerTotal(c);
+            document.getElementById('customerTotalDebt').innerText = formatNumber(calcCustomerTotal(c));
             
             const list = document.getElementById('debtsList');
             if(!c.transactions || c.transactions.length === 0) {
-                list.innerHTML = '<div style="text-align:center; color:var(--gray); padding:20px;">لا توجد عمليات مسجلة</div>';
+                list.innerHTML = `<div style="text-align:center; color:var(--gray); padding:20px;">${isArabic ? "لا توجد عمليات مسجلة" : "No transactions"}</div>`;
                 return;
             }
 
@@ -369,22 +419,26 @@
             list.innerHTML = sorted.map(t => `
                 <div class="debt-item ${t.type}">
                     <div>
-                        <div style="font-weight:bold;">${t.type === 'payment' ? 'دفعة مسددة' : t.item}</div>
-                        <div style="font-size:0.8rem; color:var(--gray);">${new Date(t.date).toLocaleString('ar-EG')}</div>
+                        <div style="font-weight:bold; font-size:1.05rem;">${t.type === 'payment' ? (isArabic ? 'دفعة مسددة' : 'Payment') : (t.item || '-')}</div>
+                        <div style="font-size:0.8rem; color:var(--gray); margin-top:3px;"><i class="far fa-clock"></i> ${formatDate(t.date)}</div>
                     </div>
-                    <div style="display:flex; align-items:center; gap:15px;">
-                        <span class="debt-amount">${t.type === 'payment' ? '-' : '+'}${t.amount}</span>
-                        <i class="fas fa-trash" style="color:rgba(255,255,255,0.3); cursor:pointer;" onclick="deleteTransaction('${t.id}')"></i>
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <span class="debt-amount">${t.type === 'payment' ? '-' : '+'}${formatNumber(t.amount)}</span>
+                        <div class="action-icons">
+                            <i class="fas fa-pen" onclick="openEdit('${t.id}')"></i>
+                            <i class="fas fa-trash" style="color:var(--danger);" onclick="deleteTransaction('${t.id}')"></i>
+                        </div>
                     </div>
                 </div>
             `).join('');
         }
 
+        /* --- العمليات (إضافة، تعديل، حذف) --- */
         async function addCustomer() {
             const name = document.getElementById('custName').value;
             const item = document.getElementById('custItem').value;
             const amt = document.getElementById('custAmount').value;
-            if(!name) return alert("الاسم مطلوب");
+            if(!name) return;
             let trans = [];
             if(item && amt) trans.push({ id: Date.now().toString(), type: 'debt', item: item, amount: Number(amt), date: new Date().toISOString() });
             await db.collection('users').doc(currentUser.uid).collection('customers').add({ name: name, transactions: trans });
@@ -396,35 +450,63 @@
             const amtId = type === 'debt' ? 'debtAmount' : 'paymentAmount';
             const itemId = type === 'debt' ? 'debtItem' : null;
             const amt = document.getElementById(amtId).value;
-            const item = itemId ? document.getElementById(itemId).value : 'تسديد';
-            if(!amt || amt <= 0) return alert("أدخل مبلغ صحيح");
+            const item = itemId ? document.getElementById(itemId).value : (isArabic ? 'تسديد' : 'Payment');
+            if(!amt || amt <= 0) return;
+            
             const c = customers.find(x => x.id === currentCustomerId);
             const newTrans = { id: Date.now().toString(), type: type, item: item, amount: Number(amt), date: new Date().toISOString() };
             let transList = c.transactions || [];
             transList.push(newTrans);
+            
             await db.collection('users').doc(currentUser.uid).collection('customers').doc(currentCustomerId).update({ transactions: transList });
             hideModal(type === 'debt' ? 'debtModal' : 'paymentModal');
             document.getElementById(amtId).value = ''; if(itemId) document.getElementById(itemId).value = '';
         }
 
+        function openEdit(tid) {
+            editTransactionId = tid;
+            const c = customers.find(x => x.id === currentCustomerId);
+            const t = c.transactions.find(x => x.id === tid);
+            document.getElementById('editItem').value = t.type === 'payment' ? '' : t.item;
+            document.getElementById('editItem').style.display = t.type === 'payment' ? 'none' : 'block';
+            document.getElementById('editAmount').value = t.amount;
+            showModal('editModal');
+        }
+
+        async function saveEdit() {
+            const newAmt = document.getElementById('editAmount').value;
+            const newItem = document.getElementById('editItem').value;
+            if(!newAmt || newAmt <= 0) return;
+            
+            const c = customers.find(x => x.id === currentCustomerId);
+            const tIndex = c.transactions.findIndex(x => x.id === editTransactionId);
+            c.transactions[tIndex].amount = Number(newAmt);
+            if(c.transactions[tIndex].type === 'debt') c.transactions[tIndex].item = newItem;
+            
+            await db.collection('users').doc(currentUser.uid).collection('customers').doc(currentCustomerId).update({ transactions: c.transactions });
+            hideModal('editModal');
+        }
+
         async function deleteTransaction(tid) {
-            if(!confirm("هل أنت متأكد من حذف هذه العملية؟")) return;
+            if(!confirm(isArabic ? "حذف هذه العملية؟" : "Delete transaction?")) return;
             const c = customers.find(x => x.id === currentCustomerId);
             const newList = c.transactions.filter(t => t.id !== tid);
             await db.collection('users').doc(currentUser.uid).collection('customers').doc(currentCustomerId).update({ transactions: newList });
         }
 
+        async function deleteCustomer() {
+            if(!confirm(isArabic ? "تحذير: سيتم حذف العميل وكل ديونه نهائياً. هل أنت متأكد؟" : "Delete customer and all records permanently?")) return;
+            await db.collection('users').doc(currentUser.uid).collection('customers').doc(currentCustomerId).delete();
+            goBack();
+        }
+
+        /* --- دوال الواجهة --- */
         function showModal(id) { document.getElementById(id).classList.add('active'); }
         function hideModal(id) { document.getElementById(id).classList.remove('active'); }
-
-        function exportData() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(customers));
-            const downloadAnchorNode = document.createElement('a');
-            downloadAnchorNode.setAttribute("href",     dataStr);
-            downloadAnchorNode.setAttribute("download", "DebtTracker_Backup.json");
-            document.body.appendChild(downloadAnchorNode);
-            downloadAnchorNode.click();
-            downloadAnchorNode.remove();
+        
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) { document.documentElement.requestFullscreen().catch(err => {}); } 
+            else { if (document.exitFullscreen) { document.exitFullscreen(); } }
         }
     </script>
 </body>
