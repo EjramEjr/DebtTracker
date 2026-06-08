@@ -47,6 +47,7 @@
         .fb-color { color: #1877F2; } .wa-color { color: #25D366; }
         .contact-title { font-size: 0.85rem; color: var(--gray); padding: 15px 25px 5px; font-weight: bold; text-transform: uppercase; }
 
+        /* هنا تم إضافة flex-direction: column لعدم تداخل الشاشة */
         .header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(15px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .logo { font-size: 1.4rem; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: flex; align-items: center; gap: 8px; }
         .search-container { padding: 15px 20px 0; }
@@ -62,12 +63,10 @@
         .customer-info h3 { font-size: 1.1rem; margin-bottom: 4px; }
         .customer-debt { font-size: 1.3rem; font-weight: bold; color: var(--secondary); }
         
-        #detailView { display: none; padding: 20px; padding-bottom: 40px; }
         .detail-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .total-box { text-align: center; padding: 25px; background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01)); border-radius: var(--radius); margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
         .total-amount { font-size: 2.8rem; color: var(--primary); font-weight: 900; }
         
-        /* التنسيق الجديد الفاخر لشرائح المدخلات */
         .debt-item { background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01)); padding: 16px; border-radius: var(--radius-sm); margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: space-between; gap: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); position: relative; overflow: hidden; }
         .debt-item::after { content: ''; position: absolute; top: 0; right: 0; width: 5px; height: 100%; background: var(--danger); }
         html[dir="ltr"] .debt-item::after { right: auto; left: 0; }
@@ -87,7 +86,6 @@
         html[dir="ltr"] .ejram-secure-add-btn { left: auto; right: 30px; } 
         .ejram-secure-add-btn.hidden { transform: scale(0); opacity: 0; pointer-events: none; }
         
-        /* حقوق الملكية */
         .copyright-footer { text-align: center; padding: 30px 20px; color: var(--gray); font-size: 0.95rem; margin-top: auto; }
         .copyright-footer a { color: #3b82f6; text-decoration: none; font-weight: 800; font-size: 1.05rem; }
         
@@ -135,7 +133,7 @@
         <div class="copyright-footer">Developed by <a href="https://www.facebook.com/EjramGamer07" target="_blank">Amr Gamal</a> &copy; 2026</div>
     </div>
 
-    <div id="appView" style="display: none; flex: 1;">
+    <div id="appView" style="display: none; flex-direction: column; width: 100%; min-height: 100vh;">
         <header class="header">
             <button style="background:none; border:none; color:white; font-size:1.4rem; cursor:pointer;" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
             <div class="logo"><i class="fas fa-wallet" style="font-size: 1rem;"></i> <span data-ar="دفتر الديون" data-en="Debt Ledger">دفتر الديون</span></div>
@@ -152,7 +150,7 @@
             <div class="copyright-footer">Developed by <a href="https://www.facebook.com/EjramGamer07" target="_blank">Amr Gamal</a> &copy; 2026</div>
         </div>
 
-        <div id="detailView" style="flex: 1;">
+        <div id="detailView" style="display: none; flex-direction: column; flex: 1; padding: 20px;">
             <div class="detail-header">
                 <h2 id="customerNameTitle">Customer</h2>
                 <div style="display:flex; gap:10px;">
@@ -179,7 +177,9 @@
     <div class="modal" id="debtModal"><div class="modal-content"><h3 style="margin-bottom: 20px;" data-ar="إضافة دين" data-en="Add Debt">إضافة دين</h3><div class="input-group"><input type="text" id="debtItem" class="auth-input" data-placeholder-ar="البيان / المنتج" data-placeholder-en="Details" autocomplete="off"></div><div class="input-group"><input type="number" id="debtAmount" class="auth-input" data-placeholder-ar="المبلغ" data-placeholder-en="Amount" autocomplete="off"></div><div style="display:flex; gap:10px; margin-top:10px;"><button class="btn" style="background:var(--danger); color:white;" onclick="addTransaction('debt')" data-ar="حفظ الدين" data-en="Save Debt">حفظ الدين</button><button class="btn btn-outline" onclick="hideModal('debtModal')" data-ar="إلغاء" data-en="Cancel">إلغاء</button></div></div></div>
     <div class="modal" id="paymentModal"><div class="modal-content"><h3 style="margin-bottom: 20px; color:var(--success);" data-ar="تسديد دفعة" data-en="Add Payment">تسديد دفعة</h3><div class="input-group"><input type="number" id="paymentAmount" class="auth-input" data-placeholder-ar="المبلغ المدفوع" data-placeholder-en="Amount Paid" autocomplete="off"></div><div style="display:flex; gap:10px; margin-top:10px;"><button class="btn" style="background:var(--success); color:white;" onclick="addTransaction('payment')" data-ar="تأكيد الدفع" data-en="Confirm">تأكيد الدفع</button><button class="btn btn-outline" onclick="hideModal('paymentModal')" data-ar="إلغاء" data-en="Cancel">إلغاء</button></div></div></div>
     <div class="modal" id="editModal"><div class="modal-content"><h3 style="margin-bottom: 20px; color:var(--warning);" data-ar="تعديل العملية" data-en="Edit Record">تعديل العملية</h3><div class="input-group"><input type="text" id="editItem" class="auth-input" data-placeholder-ar="البيان" data-placeholder-en="Details" autocomplete="off"></div><div class="input-group"><input type="number" id="editAmount" class="auth-input" data-placeholder-ar="المبلغ" data-placeholder-en="Amount" autocomplete="off"></div><div style="display:flex; gap:10px; margin-top:10px;"><button class="btn" style="background:var(--warning); color:white;" onclick="saveEdit()" data-ar="تحديث" data-en="Update">تحديث</button><button class="btn btn-outline" onclick="hideModal('editModal')" data-ar="إلغاء" data-en="Cancel">إلغاء</button></div></div></div>
+
     <script>
+        setInterval(() => { document.querySelectorAll('grammarly-desktop-integration, grammarly-extension').forEach(e => e.remove()); }, 1000);
         function showAlert(msg, type='info') { document.getElementById('customAlertMsg').innerText = msg; const icon = document.getElementById('customAlertIcon'); if(type === 'error') { icon.innerHTML = '<i class="fas fa-times-circle"></i>'; icon.style.color = 'var(--danger)'; document.getElementById('customAlertTitle').innerText = isArabic ? 'خطأ' : 'Error'; } else if(type === 'success') { icon.innerHTML = '<i class="fas fa-check-circle"></i>'; icon.style.color = 'var(--success)'; document.getElementById('customAlertTitle').innerText = isArabic ? 'نجاح' : 'Success'; } else { icon.innerHTML = '<i class="fas fa-info-circle"></i>'; icon.style.color = 'var(--primary)'; document.getElementById('customAlertTitle').innerText = isArabic ? 'تنبيه' : 'Notice'; } showModal('customAlertModal'); }
         let currentConfirmAction = null; function showConfirm(msg, action) { document.getElementById('customConfirmMsg').innerText = msg; currentConfirmAction = action; showModal('customConfirmModal'); } function executeConfirm() { hideModal('customConfirmModal'); if(currentConfirmAction) currentConfirmAction(); }
         const isArabic = navigator.language.toLowerCase().startsWith('ar'); document.documentElement.dir = isArabic ? 'rtl' : 'ltr'; document.querySelectorAll('[data-ar]').forEach(el => el.innerHTML = isArabic ? el.getAttribute('data-ar') : el.getAttribute('data-en')); document.querySelectorAll('[data-placeholder-ar]').forEach(el => el.placeholder = isArabic ? el.getAttribute('data-placeholder-ar') : el.getAttribute('data-placeholder-en')); if(!isArabic) document.querySelectorAll('.fa-arrow-left').forEach(i => i.classList.replace('fa-arrow-left', 'fa-arrow-right'));
@@ -218,27 +218,14 @@
             document.getElementById('totalCustomers').innerText = formatNum(count); document.getElementById('totalDebt').innerText = formatNum(tot);
         }
 
-        function openCustomer(id) { currentCustomerId = id; document.getElementById('dashboardView').style.display = 'none'; document.getElementById('detailView').style.display = 'block'; document.getElementById('mainFab').classList.add('hidden'); renderDetail(); }
+        function openCustomer(id) { currentCustomerId = id; document.getElementById('dashboardView').style.display = 'none'; document.getElementById('detailView').style.display = 'flex'; document.getElementById('mainFab').classList.add('hidden'); renderDetail(); }
         function goBack() { currentCustomerId = null; document.getElementById('detailView').style.display = 'none'; document.getElementById('dashboardView').style.display = 'flex'; document.getElementById('mainFab').classList.remove('hidden'); }
-        
         function renderDetail() {
             const c = customers.find(x => x.id === currentCustomerId); if(!c) return goBack();
             document.getElementById('customerNameTitle').innerText = c.name; document.getElementById('customerTotalDebt').innerText = formatNum(calcCustomerTotal(c));
             const list = document.getElementById('debtsList'); if(!c.transactions || c.transactions.length === 0) { list.innerHTML = `<div style="text-align:center; color:var(--gray); padding:20px;">${isArabic ? "لا توجد عمليات" : "No records"}</div>`; return; }
             const sorted = [...c.transactions].sort((a,b) => new Date(b.date) - new Date(a.date));
-            list.innerHTML = sorted.map(t => `
-                <div class="debt-item ${t.type}">
-                    <div class="debt-info-group">
-                        <div class="debt-item-title">${t.type === 'payment' ? (isArabic ? 'دفعة مسددة' : 'Payment') : (t.item || '-')}</div>
-                        <div class="debt-item-date"><i class="far fa-clock"></i> ${formatDate(t.date)}</div>
-                    </div>
-                    <div class="debt-amount-group">${t.type === 'payment' ? '-' : '+'}${formatNum(t.amount)}</div>
-                    <div class="debt-actions-group">
-                        <div class="action-icon-btn edit" onclick="openEditDialog('${t.id}')"><i class="fas fa-pen"></i></div>
-                        <div class="action-icon-btn delete" onclick="deleteTransactionConfirm('${t.id}')"><i class="fas fa-trash"></i></div>
-                    </div>
-                </div>
-            `).join('');
+            list.innerHTML = sorted.map(t => `<div class="debt-item ${t.type}"><div class="debt-info-group"><div class="debt-item-title">${t.type === 'payment' ? (isArabic ? 'دفعة مسددة' : 'Payment') : (t.item || '-')}</div><div class="debt-item-date"><i class="far fa-clock"></i> ${formatDate(t.date)}</div></div><div class="debt-amount-group">${t.type === 'payment' ? '-' : '+'}${formatNum(t.amount)}</div><div class="debt-actions-group"><div class="action-icon-btn edit" onclick="openEditDialog('${t.id}')"><i class="fas fa-pen"></i></div><div class="action-icon-btn delete" onclick="deleteTransactionConfirm('${t.id}')"><i class="fas fa-trash"></i></div></div></div>`).join('');
         }
 
         function openModal(id) { if(id==='customerModal') { document.getElementById('custName').value = ''; document.getElementById('custItem').value = ''; document.getElementById('custAmount').value = ''; } if(id==='debtModal') { document.getElementById('debtItem').value = ''; document.getElementById('debtAmount').value = ''; } if(id==='paymentModal') { document.getElementById('paymentAmount').value = ''; } showModal(id); }
