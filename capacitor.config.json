@@ -1,5 +1,13 @@
 {
   "appId": "Com.ejramgamal.json",
-  "appName": "دفتر الديون / Debt Ledger",
-  "webDir": "www"
+  "appName": "Debt Ledger",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "server": {
+    "allowNavigation": [
+      "aboroqya-4a460.firebaseapp.com",
+      "*.firebaseapp.com",
+      "*.googleapis.com"
+    ]
+  }
 }

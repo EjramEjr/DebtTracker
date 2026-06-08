@@ -31,6 +31,16 @@ jobs:
           npx cap add android
           npx cap sync android
 
+      - name: Inject Arabic App Name (Localization)
+        run: |
+          mkdir -p android/app/src/main/res/values-ar
+          cat << 'XML' > android/app/src/main/res/values-ar/strings.xml
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <string name="app_name">دفتر الديون</string>
+          </resources>
+          XML
+
       - name: Generate App Icons & Splash Screen
         run: |
           npm i -D @capacitor/assets
