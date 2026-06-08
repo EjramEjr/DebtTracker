@@ -31,6 +31,11 @@ jobs:
           npx cap add android
           npx cap sync android
 
+      - name: Generate App Icons & Splash Screen
+        run: |
+          npm i -D @capacitor/assets
+          npx @capacitor/assets generate --android
+
       - name: Inject Permanent Keystore
         run: |
           mkdir -p ~/.android
@@ -58,12 +63,7 @@ jobs:
                   {
                     "current_key": "AIzaSyCcKXCMRlVWV7jo53v5EBXYErcq9-d4slQ"
                   }
-                ],
-                "services": {
-                  "appinvite_service": {
-                    "other_platform_oauth_client": []
-                  }
-                }
+                ]
               }
             ],
             "configuration_version": "1"
