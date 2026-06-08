@@ -77,8 +77,8 @@
             <h2 class="logo"><i class="fas fa-wallet"></i> دفتر الديون</h2>
             <p style="margin-bottom: 25px; color: var(--gray); font-size: 0.9rem;">مزامنة سحابية آمنة لبياناتك</p>
             
-            <input type="email" id="emailInput" class="auth-input" placeholder="البريد الإلكتروني">
-            <input type="password" id="passwordInput" class="auth-input" placeholder="كلمة المرور">
+            <input type="email" id="emailInput" class="auth-input" placeholder="البريد الإلكتروني" autocomplete="off" autocorrect="off" spellcheck="false" data-gramm="false">
+            <input type="password" id="passwordInput" class="auth-input" placeholder="كلمة المرور" autocomplete="new-password" data-gramm="false">
             
             <div style="display: flex; gap: 10px; margin-bottom: 20px;">
                 <button class="btn btn-main" onclick="emailLogin()">دخول</button>
@@ -102,7 +102,7 @@
             <h3 style="margin-bottom: 20px; text-align:center;">الدخول برقم الهاتف</h3>
             
             <div id="phoneStep1">
-                <input type="tel" id="phoneNumber" class="auth-input" placeholder="مثال: +201012345678" dir="ltr" style="text-align:center;">
+                <input type="tel" id="phoneNumber" class="auth-input" placeholder="مثال: +201012345678" dir="ltr" style="text-align:center;" autocomplete="off" data-gramm="false">
                 <div id="recaptcha-container" style="margin-bottom: 15px; display:flex; justify-content:center;"></div>
                 <div style="display:flex; gap:10px;">
                     <button class="btn btn-main" onclick="sendSmsCode()">إرسال الرمز</button>
@@ -112,7 +112,7 @@
 
             <div id="phoneStep2" style="display: none;">
                 <p style="text-align:center; color:var(--gray); margin-bottom:15px;">تم إرسال رمز التحقق إلى هاتفك</p>
-                <input type="text" id="smsCode" class="auth-input" placeholder="الرمز المكون من 6 أرقام" dir="ltr" style="text-align:center;">
+                <input type="number" id="smsCode" class="auth-input" placeholder="الرمز المكون من 6 أرقام" dir="ltr" style="text-align:center;" autocomplete="off" data-gramm="false">
                 <div style="display:flex; gap:10px;">
                     <button class="btn" style="background:var(--success); color:white;" onclick="verifySmsCode()">تأكيد الدخول</button>
                     <button class="btn btn-outline" onclick="hideModal('phoneAuthModal')">إلغاء</button>
@@ -170,9 +170,9 @@
     <div class="modal" id="customerModal">
         <div class="modal-content">
             <h3 style="margin-bottom: 20px;">إضافة عميل جديد</h3>
-            <input type="text" id="custName" class="auth-input" placeholder="اسم العميل">
-            <input type="text" id="custItem" class="auth-input" placeholder="المنتج الأول (اختياري)">
-            <input type="number" id="custAmount" class="auth-input" placeholder="المبلغ">
+            <input type="text" id="custName" class="auth-input" placeholder="اسم العميل" autocomplete="off" data-gramm="false">
+            <input type="text" id="custItem" class="auth-input" placeholder="المنتج الأول (اختياري)" autocomplete="off" data-gramm="false">
+            <input type="number" id="custAmount" class="auth-input" placeholder="المبلغ" autocomplete="off" data-gramm="false">
             <div style="display:flex; gap:10px; margin-top:20px;">
                 <button class="btn btn-main" onclick="addCustomer()">حفظ</button>
                 <button class="btn btn-outline" onclick="hideModal('customerModal')">إلغاء</button>
@@ -183,8 +183,8 @@
     <div class="modal" id="debtModal">
         <div class="modal-content">
             <h3 style="margin-bottom: 20px;">تسجيل دين جديد</h3>
-            <input type="text" id="debtItem" class="auth-input" placeholder="اسم المنتج">
-            <input type="number" id="debtAmount" class="auth-input" placeholder="المبلغ">
+            <input type="text" id="debtItem" class="auth-input" placeholder="اسم المنتج" autocomplete="off" data-gramm="false">
+            <input type="number" id="debtAmount" class="auth-input" placeholder="المبلغ" autocomplete="off" data-gramm="false">
             <div style="display:flex; gap:10px; margin-top:20px;">
                 <button class="btn" style="background:var(--danger); color:white;" onclick="addTransaction('debt')">تسجيل الدين</button>
                 <button class="btn btn-outline" onclick="hideModal('debtModal')">إلغاء</button>
@@ -195,7 +195,7 @@
     <div class="modal" id="paymentModal">
         <div class="modal-content">
             <h3 style="margin-bottom: 20px; color:var(--success);">تسديد دفعة مالية</h3>
-            <input type="number" id="paymentAmount" class="auth-input" placeholder="المبلغ المدفوع">
+            <input type="number" id="paymentAmount" class="auth-input" placeholder="المبلغ المدفوع" autocomplete="off" data-gramm="false">
             <div style="display:flex; gap:10px; margin-top:20px;">
                 <button class="btn" style="background:var(--success); color:white;" onclick="addTransaction('payment')">تأكيد الدفع</button>
                 <button class="btn btn-outline" onclick="hideModal('paymentModal')">إلغاء</button>
@@ -204,8 +204,10 @@
     </div>
 
     <script>
+        // تمت إضافة authDomain لحل مشكلة تسجيل الدخول
         const firebaseConfig = {
             apiKey: "AIzaSyCcKXCMRlVWV7jo53v5EBXYErcq9-d4slQ",
+            authDomain: "aboroqya-4a460.firebaseapp.com",
             projectId: "aboroqya-4a460",
             storageBucket: "aboroqya-4a460.firebasestorage.app",
             appId: "1:998280256788:android:105cfdff77e5dd19d3b601"
@@ -220,7 +222,6 @@
         let currentCustomerId = null;
         let confirmationResult = null;
 
-        // مراقبة حالة الدخول
         auth.onAuthStateChanged(user => {
             if (user) {
                 currentUser = user;
@@ -235,18 +236,17 @@
             }
         });
 
-        /* --- أنظمة تسجيل الدخول --- */
         function emailLogin() {
             const email = document.getElementById('emailInput').value;
             const pass = document.getElementById('passwordInput').value;
-            if(!email || !pass) return alert("الرجاء إدخال البريد وكلمة المرور");
-            auth.signInWithEmailAndPassword(email, pass).catch(err => alert("خطأ: " + err.message));
+            if(!email || !pass) return alert("الرجاء إدخال البريد الإلكتروني وكلمة المرور أولاً");
+            auth.signInWithEmailAndPassword(email, pass).catch(err => alert("خطأ: تأكد من صحة البيانات"));
         }
 
         function emailRegister() {
             const email = document.getElementById('emailInput').value;
             const pass = document.getElementById('passwordInput').value;
-            if(!email || !pass) return alert("الرجاء إدخال البريد وكلمة المرور");
+            if(!email || !pass) return alert("الرجاء إدخال البريد الإلكتروني وكلمة المرور في المربعات أولاً لإنشاء الحساب");
             auth.createUserWithEmailAndPassword(email, pass)
                 .then(() => alert("تم إنشاء حسابك بنجاح!"))
                 .catch(err => alert("خطأ في الإنشاء: " + err.message));
@@ -281,7 +281,7 @@
                     document.getElementById('phoneStep1').style.display = 'none';
                     document.getElementById('phoneStep2').style.display = 'block';
                 }).catch((error) => {
-                    alert("تعذر إرسال الرمز: " + error.message);
+                    alert("تعذر إرسال الرمز، تأكد من الرقم وحاول مجدداً.");
                     if(window.recaptchaVerifier) window.recaptchaVerifier.render().then(wId => grecaptcha.reset(wId));
                 });
         }
@@ -297,7 +297,6 @@
 
         function logout() { auth.signOut(); }
 
-        /* --- العمليات وقاعدة البيانات --- */
         function loadData() {
             db.collection('users').doc(currentUser.uid).collection('customers').onSnapshot(snapshot => {
                 customers = [];
