@@ -30,7 +30,7 @@
         .auth-input { width: 100%; padding: 15px 18px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.4); color: white; outline: none; transition: var(--transition); font-size: 1rem; }
         .auth-input:focus { border-color: var(--primary); background: rgba(0,0,0,0.6); box-shadow: 0 0 12px rgba(99,102,241,0.3); }
         
-        .btn { padding: 15px; border: none; border-radius: var(--radius-sm); font-weight: bold; cursor: pointer; transition: var(--transition); font-size: 1rem; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn { padding: 15px; border: none; border-radius: var(--radius-sm); font-weight: bold; cursor: pointer; transition: var(--transition); font-size: 1rem; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
         .btn-main { background: linear-gradient(135deg, var(--primary), #4f46e5); color: white; box-shadow: 0 4px 15px rgba(99,102,241,0.3); }
         .btn-outline { background: transparent; color: white; border: 1px solid rgba(255,255,255,0.2); }
         
@@ -44,10 +44,9 @@
         .sidebar-email { font-size: 0.9rem; opacity: 0.9; word-break: break-all; }
         .sidebar-links { padding: 10px 0; flex: 1; overflow-y: auto; }
         .sidebar-link { display: flex; align-items: center; gap: 15px; padding: 15px 25px; color: var(--light); text-decoration: none; font-size: 1.1rem; border-bottom: 1px solid rgba(255,255,255,0.02); }
-        .fb-color { color: #1877F2; } .wa-color { color: #25D366; }
+        .fb-color { color: #1877F2; } .wa-color { color: #25D366; } .vip-color { color: #fbbf24; text-shadow: 0 0 10px rgba(251, 191, 36, 0.4); }
         .contact-title { font-size: 0.85rem; color: var(--gray); padding: 15px 25px 5px; font-weight: bold; text-transform: uppercase; }
 
-        /* هنا تم إضافة flex-direction: column لعدم تداخل الشاشة */
         .header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(15px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .logo { font-size: 1.4rem; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: flex; align-items: center; gap: 8px; }
         .search-container { padding: 15px 20px 0; }
@@ -102,6 +101,9 @@
     <div id="sidebar">
         <div class="sidebar-header"><div class="sidebar-avatar"><i class="fas fa-user"></i></div><div class="sidebar-email" id="sidebarUserEmail">جاري التحميل...</div></div>
         <div class="sidebar-links">
+            <a href="#" class="sidebar-link" onclick="showModal('vipModal'); toggleSidebar();" style="font-weight: bold;"><i class="fas fa-crown vip-color"></i> <span class="vip-color" data-ar="إزالة الإعلانات VIP" data-en="Remove Ads VIP">إزالة الإعلانات VIP</span></a>
+            <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 15px 20px;"></div>
+            
             <div class="contact-title" data-ar="تواصل" data-en="Contact">تواصل</div>
             <a href="https://www.facebook.com/EjramGamer07" class="sidebar-link"><i class="fab fa-facebook fb-color"></i> <span data-ar="فيسبوك" data-en="Facebook">فيسبوك</span></a>
             <a href="https://wa.me/201274186544" class="sidebar-link"><i class="fab fa-whatsapp wa-color"></i> <span data-ar="واتساب" data-en="WhatsApp">واتساب</span></a>
@@ -171,6 +173,21 @@
 
     <button class="ejram-secure-add-btn" id="mainFab" onclick="openModal('customerModal')"><svg viewBox="0 0 24 24" width="30" height="30" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></button>
 
+    <div class="modal" id="vipModal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 15px; color: #fbbf24;"><i class="fas fa-crown"></i> الترقية لنسخة VIP</h3>
+            <p style="color: var(--gray); font-size: 0.95rem; margin-bottom: 20px; line-height: 1.6;">
+                لإلغاء الإعلانات ودعم المطور، قم بتحويل <strong>2 دولار</strong> (أو 100 جنيه مصري) عبر فودافون كاش أو إنستاباي إلى الرقم:<br>
+                <strong style="color: white; font-size: 1.2rem; display: block; margin: 10px 0;">01274186544</strong>
+                ثم تواصل معي على الواتساب لتفعيل حسابك فوراً.
+            </p>
+            <div style="display:flex; gap:10px;">
+                <a href="https://wa.me/201274186544" class="btn btn-main" style="background: #25D366; text-decoration: none;"><i class="fab fa-whatsapp"></i> تواصل معي</a>
+                <button class="btn btn-outline" onclick="hideModal('vipModal')">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal" id="customAlertModal"><div class="modal-content"><div id="customAlertIcon" style="font-size:3rem; color:var(--primary); margin-bottom:15px;"><i class="fas fa-info-circle"></i></div><h3 id="customAlertTitle" style="margin-bottom:10px;">تنبيه</h3><p id="customAlertMsg" style="color:var(--gray); margin-bottom:20px; font-size:0.95rem;"></p><button class="btn btn-main" onclick="hideModal('customAlertModal')" data-ar="حسناً" data-en="OK">حسناً</button></div></div>
     <div class="modal" id="customConfirmModal"><div class="modal-content"><div style="font-size:3rem; color:var(--danger); margin-bottom:15px;"><i class="fas fa-exclamation-triangle"></i></div><h3 data-ar="تأكيد الحذف" data-en="Confirm Delete">تأكيد الحذف</h3><p id="customConfirmMsg" style="color:var(--gray); margin-bottom:20px; font-size:0.95rem;"></p><div style="display:flex; gap:10px;"><button class="btn" style="background:var(--danger); color:white;" onclick="executeConfirm()" data-ar="نعم، احذف" data-en="Yes, Delete">نعم، احذف</button><button class="btn btn-outline" onclick="hideModal('customConfirmModal')" data-ar="إلغاء" data-en="Cancel">إلغاء</button></div></div></div>
     <div class="modal" id="customerModal"><div class="modal-content"><h3 style="margin-bottom: 20px;" data-ar="عميل جديد" data-en="New Customer">عميل جديد</h3><div class="input-group"><input type="text" id="custName" class="auth-input" data-placeholder-ar="اسم العميل" data-placeholder-en="Name" autocomplete="off"></div><div class="input-group"><input type="text" id="custItem" class="auth-input" data-placeholder-ar="البيان (اختياري)" data-placeholder-en="Details (Optional)" autocomplete="off"></div><div class="input-group"><input type="number" id="custAmount" class="auth-input" data-placeholder-ar="المبلغ" data-placeholder-en="Amount" autocomplete="off"></div><div style="display:flex; gap:10px; margin-top:10px;"><button class="btn btn-main" onclick="addCustomer()" data-ar="حفظ" data-en="Save">حفظ</button><button class="btn btn-outline" onclick="hideModal('customerModal')" data-ar="إلغاء" data-en="Cancel">إلغاء</button></div></div></div>
@@ -190,16 +207,55 @@
         try { db.enablePersistence({ synchronizeTabs: true }); } catch (err) {}
 
         let currentUser = null; let customers = []; let currentCustomerId = null; let editTransactionId = null;
+        window.userIsPremium = false; // متغير عالمي لحالة الـ VIP
 
         auth.onAuthStateChanged(user => {
             document.getElementById('splashScreen').style.display = 'none';
-            if (user) { currentUser = user; document.getElementById('authView').style.display = 'none'; document.getElementById('appView').style.display = 'flex'; document.getElementById('sidebarUserEmail').innerText = user.email || 'User'; loadData(); } 
-            else { currentUser = null; document.getElementById('authView').style.display = 'flex'; document.getElementById('appView').style.display = 'none'; }
+            if (user) { 
+                currentUser = user; 
+                document.getElementById('authView').style.display = 'none'; 
+                document.getElementById('appView').style.display = 'flex'; 
+                document.getElementById('sidebarUserEmail').innerText = user.email || 'User'; 
+                
+                // فحص حالة الـ VIP للمستخدم من فايربيس
+                db.collection('users').doc(user.uid).get().then(doc => {
+                    if (doc.exists && doc.data().premium === true) {
+                        window.userIsPremium = true;
+                    } else {
+                        // إذا لم يكن VIP يتم تشغيل الإعلانات
+                        if(window.initAdMob) window.initAdMob();
+                    }
+                }).catch(err => { if(window.initAdMob) window.initAdMob(); });
+                
+                loadData(); 
+            } else { 
+                currentUser = null; document.getElementById('authView').style.display = 'flex'; document.getElementById('appView').style.display = 'none'; 
+            }
         });
+
+        let adCounter = 0;
+        function triggerAdCheck() {
+            if(window.userIsPremium) return; // الحسابات المميزة لا ترى إعلانات
+            adCounter++;
+            if(adCounter >= 5) {
+                if(window.showFullScreenAd) window.showFullScreenAd();
+                adCounter = 0;
+            }
+        }
 
         function toggleAuthForm() { const login = document.getElementById('loginForm'); const reg = document.getElementById('registerForm'); login.style.display = login.style.display === 'none' ? 'block' : 'none'; reg.style.display = login.style.display === 'none' ? 'block' : 'none'; }
         function emailLogin() { const email = document.getElementById('loginEmail').value; const pass = document.getElementById('loginPass').value; if(!email || !pass) return showAlert(isArabic ? "أدخل البيانات أولاً" : "Enter credentials", 'error'); auth.signInWithEmailAndPassword(email, pass).catch(err => showAlert(err.message, 'error')); }
-        function emailRegister() { const email = document.getElementById('regEmail').value; const pass = document.getElementById('regPass').value; if(!email || !pass) return showAlert(isArabic ? "أدخل البيانات أولاً" : "Enter credentials", 'error'); auth.createUserWithEmailAndPassword(email, pass).then(() => { showAlert(isArabic ? "تم إنشاء الحساب بنجاح!" : "Account Created", 'success'); toggleAuthForm(); }).catch(err => showAlert(err.message, 'error')); }
+        
+        // عند إنشاء حساب جديد، يتم إنشاء مسودة له في قاعدة البيانات
+        function emailRegister() { 
+            const email = document.getElementById('regEmail').value; const pass = document.getElementById('regPass').value; 
+            if(!email || !pass) return showAlert(isArabic ? "أدخل البيانات أولاً" : "Enter credentials", 'error'); 
+            auth.createUserWithEmailAndPassword(email, pass).then((cred) => { 
+                db.collection('users').doc(cred.user.uid).set({ email: email, premium: false }); // تسجيله كمستخدم عادي مبدئياً
+                showAlert(isArabic ? "تم إنشاء الحساب بنجاح!" : "Account Created", 'success'); 
+                toggleAuthForm(); 
+            }).catch(err => showAlert(err.message, 'error')); 
+        }
         
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('sidebarOverlay').classList.toggle('active'); }
         function logout() { toggleSidebar(); auth.signOut(); }
@@ -230,8 +286,8 @@
 
         function openModal(id) { if(id==='customerModal') { document.getElementById('custName').value = ''; document.getElementById('custItem').value = ''; document.getElementById('custAmount').value = ''; } if(id==='debtModal') { document.getElementById('debtItem').value = ''; document.getElementById('debtAmount').value = ''; } if(id==='paymentModal') { document.getElementById('paymentAmount').value = ''; } showModal(id); }
         
-        function addCustomer() { const name = document.getElementById('custName').value; const item = document.getElementById('custItem').value; const amt = document.getElementById('custAmount').value; if(!name) return showAlert(isArabic ? "الاسم مطلوب" : "Name required", 'error'); hideModal('customerModal'); let trans = []; if(item && amt) trans.push({ id: Date.now().toString(), type: 'debt', item: item, amount: Number(amt), date: new Date().toISOString() }); db.collection('users').doc(currentUser.uid).collection('customers').add({ name: name, transactions: trans }).then(()=> triggerAdCheck()).catch(e => showAlert(e.message, 'error')); }
-        function addTransaction(type) { const amt = document.getElementById(type === 'debt' ? 'debtAmount' : 'paymentAmount').value; const item = type === 'debt' ? document.getElementById('debtItem').value : (isArabic ? 'تسديد' : 'Payment'); if(!amt || amt <= 0) return showAlert(isArabic ? "مبلغ غير صحيح" : "Invalid amount", 'error'); hideModal(type === 'debt' ? 'debtModal' : 'paymentModal'); const c = customers.find(x => x.id === currentCustomerId); let transList = c.transactions || []; transList.push({ id: Date.now().toString(), type: type, item: item, amount: Number(amt), date: new Date().toISOString() }); db.collection('users').doc(currentUser.uid).collection('customers').doc(currentCustomerId).update({ transactions: transList }).then(()=> triggerAdCheck()).catch(e => showAlert(e.message, 'error')); }
+        function addCustomer() { const name = document.getElementById('custName').value; const item = document.getElementById('custItem').value; const amt = document.getElementById('custAmount').value; if(!name) return showAlert(isArabic ? "الاسم مطلوب" : "Name required", 'error'); hideModal('customerModal'); let trans = []; if(item && amt) trans.push({ id: Date.now().toString(), type: 'debt', item: item, amount: Number(amt), date: new Date().toISOString() }); db.collection('users').doc(currentUser.uid).collection('customers').add({ name: name, transactions: trans }).then(() => triggerAdCheck()).catch(e => showAlert(e.message, 'error')); }
+        function addTransaction(type) { const amt = document.getElementById(type === 'debt' ? 'debtAmount' : 'paymentAmount').value; const item = type === 'debt' ? document.getElementById('debtItem').value : (isArabic ? 'تسديد' : 'Payment'); if(!amt || amt <= 0) return showAlert(isArabic ? "مبلغ غير صحيح" : "Invalid amount", 'error'); hideModal(type === 'debt' ? 'debtModal' : 'paymentModal'); const c = customers.find(x => x.id === currentCustomerId); let transList = c.transactions || []; transList.push({ id: Date.now().toString(), type: type, item: item, amount: Number(amt), date: new Date().toISOString() }); db.collection('users').doc(currentUser.uid).collection('customers').doc(currentCustomerId).update({ transactions: transList }).then(() => triggerAdCheck()).catch(e => showAlert(e.message, 'error')); }
         function openEditDialog(tid) { editTransactionId = tid; const t = customers.find(x => x.id === currentCustomerId).transactions.find(x => x.id === tid); document.getElementById('editItem').value = t.type === 'payment' ? '' : t.item; document.getElementById('editItem').style.display = t.type === 'payment' ? 'none' : 'block'; document.getElementById('editAmount').value = t.amount; showModal('editModal'); }
         function saveEdit() { const newAmt = document.getElementById('editAmount').value; const newItem = document.getElementById('editItem').value; if(!newAmt || newAmt <= 0) return; hideModal('editModal'); const c = customers.find(x => x.id === currentCustomerId); const tIndex = c.transactions.findIndex(x => x.id === editTransactionId); c.transactions[tIndex].amount = Number(newAmt); if(c.transactions[tIndex].type === 'debt') c.transactions[tIndex].item = newItem; db.collection('users').doc(currentUser.uid).collection('customers').doc(currentCustomerId).update({ transactions: c.transactions }).catch(e => showAlert(e.message, 'error')); }
         function deleteTransactionConfirm(tid) { showConfirm(isArabic ? "حذف هذه العملية نهائياً؟" : "Delete permanently?", () => { const c = customers.find(x => x.id === currentCustomerId); db.collection('users').doc(currentUser.uid).collection('customers').doc(currentCustomerId).update({ transactions: c.transactions.filter(t => t.id !== tid) }).catch(e => showAlert(e.message, 'error')); }); }
