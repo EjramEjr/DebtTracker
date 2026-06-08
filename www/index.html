@@ -12,9 +12,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     
     <style>
-        /* أكواد النينجا لإخفاء إضافة Grammarly وأي زر غريب يظهر فجأة */
-        grammarly-desktop-integration, grammarly-extension, .grammarly-desktop-integration { display: none !important; visibility: hidden !important; opacity: 0 !important; }
-        
         :root { --primary: #6366f1; --secondary: #ec4899; --success: #10b981; --warning: #f59e0b; --danger: #ef4444; --dark: #0f172a; --dark-light: #1e293b; --light: #f8fafc; --gray: #94a3b8; --radius: 16px; --radius-sm: 12px; --transition: all 0.3s ease; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; }
         input { user-select: auto; }
@@ -26,17 +23,15 @@
 
         #authView { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--dark); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; }
         .auth-card { background: rgba(255,255,255,0.03); padding: 35px 25px; border-radius: var(--radius); width: 100%; max-width: 380px; text-align: center; border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(15px); box-shadow: 0 15px 35px rgba(0,0,0,0.3); margin: auto; }
-        .auth-card h2 { margin-bottom: 10px; color: var(--primary); font-size: 1.8rem; }
+        .auth-card h2 { margin-bottom: 30px; color: var(--primary); font-size: 1.8rem; }
         
         .input-group { position: relative; margin-bottom: 15px; }
         .auth-input { width: 100%; padding: 14px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: white; outline: none; transition: var(--transition); font-size: 0.95rem; }
         .auth-input:focus { border-color: var(--primary); background: rgba(0,0,0,0.5); }
+        
         .btn { padding: 14px; border: none; border-radius: var(--radius-sm); font-weight: bold; cursor: pointer; transition: var(--transition); font-size: 0.95rem; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-main { background: linear-gradient(to right, var(--primary), #4f46e5); color: white; }
         .btn-outline { background: transparent; color: white; border: 1px solid rgba(255,255,255,0.2); }
-        .btn-social { background: rgba(255,255,255,0.05); color: white; margin-bottom: 10px; }
-        .btn-social.google { background: #db4437; border-color: transparent; }
-        .btn-social.phone { background: var(--success); border-color: transparent; }
         
         #sidebarOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1001; opacity: 0; pointer-events: none; transition: 0.3s; }
         #sidebarOverlay.active { opacity: 1; pointer-events: auto; }
@@ -83,8 +78,10 @@
         .debt-item.debt .debt-amount { color: var(--danger); }
         .action-icons i { color: rgba(255,255,255,0.4); padding: 10px; font-size: 1.1rem; cursor: pointer; background: rgba(255,255,255,0.05); border-radius: 8px; }
         
-        .fab { position: fixed; bottom: 30px; left: 30px; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; font-size: 1.5rem; border: none; cursor: pointer; box-shadow: 0 8px 25px rgba(236,72,153,0.4); display: flex; align-items: center; justify-content: center; z-index: 90; }
-        html[dir="ltr"] .fab { left: auto; right: 30px; } .fab.hidden { transform: scale(0); opacity: 0; pointer-events: none; }
+        /* هذا هو كلاس الزر الجديد والمحصن ضد الاختراق */
+        .ejram-secure-add-btn { position: fixed; bottom: 30px; left: 30px; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; cursor: pointer; box-shadow: 0 8px 25px rgba(236,72,153,0.4); display: flex; align-items: center; justify-content: center; z-index: 90; }
+        html[dir="ltr"] .ejram-secure-add-btn { left: auto; right: 30px; } 
+        .ejram-secure-add-btn.hidden { transform: scale(0); opacity: 0; pointer-events: none; }
         
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: var(--transition); }
         .modal.active { opacity: 1; pointer-events: auto; }
@@ -108,26 +105,22 @@
 
     <div id="authView" style="display: none;">
         <div class="auth-card">
-            <h2 class="logo" style="justify-content:center; margin-bottom: 5px;"><i class="fas fa-wallet"></i> <span data-ar="دفتر الديون" data-en="Debt Tracker">دفتر الديون</span></h2>
-            <p style="margin-bottom: 25px; color: var(--gray); font-size: 0.9rem;" data-ar="مزامنة سحابية آمنة لبياناتك" data-en="Secure cloud sync">مزامنة سحابية آمنة لبياناتك</p>
+            <h2 class="logo" style="justify-content:center;"><i class="fas fa-wallet"></i> <span data-ar="دفتر الديون" data-en="Debt Tracker">دفتر الديون</span></h2>
             
             <div id="loginForm">
                 <form onsubmit="event.preventDefault(); emailLogin();">
                     <div class="input-group"><input type="email" id="loginEmail" class="auth-input" data-placeholder-ar="البريد الإلكتروني" data-placeholder-en="Email" autocomplete="off" spellcheck="false" data-gramm="false"></div>
                     <div class="input-group"><input type="password" id="loginPass" class="auth-input" data-placeholder-ar="كلمة المرور" data-placeholder-en="Password" style="-webkit-text-security: disc;" autocomplete="off" data-gramm="false"></div>
-                    <button type="submit" class="btn btn-main" style="margin-bottom: 10px;" data-ar="تسجيل الدخول" data-en="Login">تسجيل الدخول</button>
+                    <button type="submit" class="btn btn-main" style="margin-bottom: 15px;" data-ar="تسجيل الدخول" data-en="Login">تسجيل الدخول</button>
                     <button type="button" class="btn btn-outline" onclick="toggleAuthForm()" data-ar="إنشاء حساب جديد" data-en="Create Account">إنشاء حساب جديد</button>
                 </form>
-                <div style="display: flex; align-items: center; margin: 20px 0; color: var(--gray); font-size: 0.85rem;"><div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div><span style="padding: 0 10px;" data-ar="أو" data-en="OR">أو</span><div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div></div>
-                <button class="btn btn-social google" onclick="googleLogin()"><i class="fab fa-google"></i> <span data-ar="حساب جوجل" data-en="Google">حساب جوجل</span></button>
-                <button class="btn btn-social phone" onclick="openPhoneAuth()"><i class="fas fa-phone"></i> <span data-ar="رقم الهاتف" data-en="Phone">رقم الهاتف</span></button>
             </div>
 
             <div id="registerForm" style="display: none;">
                 <form onsubmit="event.preventDefault(); emailRegister();">
                     <div class="input-group"><input type="email" id="regEmail" class="auth-input" data-placeholder-ar="البريد الإلكتروني الجديد" data-placeholder-en="New Email" autocomplete="off" data-gramm="false"></div>
                     <div class="input-group"><input type="password" id="regPass" class="auth-input" data-placeholder-ar="كلمة مرور قوية" data-placeholder-en="Strong Password" style="-webkit-text-security: disc;" autocomplete="off" data-gramm="false"></div>
-                    <button type="submit" class="btn btn-main" style="margin-bottom: 10px; background: var(--success);" data-ar="تأكيد الإنشاء" data-en="Register">تأكيد الإنشاء</button>
+                    <button type="submit" class="btn btn-main" style="margin-bottom: 15px; background: var(--success);" data-ar="تأكيد الإنشاء" data-en="Register">تأكيد الإنشاء</button>
                     <button type="button" class="btn btn-outline" onclick="toggleAuthForm()" data-ar="العودة للدخول" data-en="Back">العودة للدخول</button>
                 </form>
             </div>
@@ -167,19 +160,17 @@
         </div>
     </div>
 
-    <button class="fab" id="mainFab" onclick="openModal('customerModal')"><i class="fas fa-plus"></i></button>
+    <button class="ejram-secure-add-btn" id="mainFab" onclick="openModal('customerModal')">
+        <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+    </button>
 
     <div class="modal" id="customAlertModal"><div class="modal-content"><div id="customAlertIcon" style="font-size:3rem; color:var(--primary); margin-bottom:15px;"><i class="fas fa-info-circle"></i></div><h3 id="customAlertTitle" style="margin-bottom:10px;">تنبيه</h3><p id="customAlertMsg" style="color:var(--gray); margin-bottom:20px; font-size:0.95rem;"></p><button class="btn btn-main" onclick="hideModal('customAlertModal')" data-ar="حسناً" data-en="OK">حسناً</button></div></div>
     <div class="modal" id="customConfirmModal"><div class="modal-content"><div style="font-size:3rem; color:var(--danger); margin-bottom:15px;"><i class="fas fa-exclamation-triangle"></i></div><h3 data-ar="تأكيد الحذف" data-en="Confirm Delete">تأكيد الحذف</h3><p id="customConfirmMsg" style="color:var(--gray); margin-bottom:20px; font-size:0.95rem;"></p><div style="display:flex; gap:10px;"><button class="btn" style="background:var(--danger); color:white;" onclick="executeConfirm()" data-ar="نعم، احذف" data-en="Yes, Delete">نعم، احذف</button><button class="btn btn-outline" onclick="hideModal('customConfirmModal')" data-ar="إلغاء" data-en="Cancel">إلغاء</button></div></div></div>
-    <div class="modal" id="phoneAuthModal"><div class="modal-content"><h3 style="margin-bottom: 20px;" data-ar="الدخول برقم الهاتف" data-en="Phone Login">الدخول برقم الهاتف</h3><div id="phoneStep1"><input type="tel" id="phoneNumber" class="auth-input" placeholder="+201012345678" dir="ltr" style="text-align:center;" autocomplete="off" data-gramm="false"><div id="recaptcha-container" style="margin-bottom: 15px; display:flex; justify-content:center;"></div><div style="display:flex; gap:10px;"><button class="btn btn-main" onclick="sendSmsCode()" data-ar="إرسال" data-en="Send">إرسال</button><button class="btn btn-outline" onclick="hideModal('phoneAuthModal')" data-ar="إلغاء" data-en="Cancel">إلغاء</button></div></div><div id="phoneStep2" style="display: none;"><input type="number" id="smsCode" class="auth-input" placeholder="123456" dir="ltr" style="text-align:center;" autocomplete="off" data-gramm="false"><div style="display:flex; gap:10px;"><button class="btn btn-main" style="background:var(--success);" onclick="verifySmsCode()" data-ar="تأكيد" data-en="Verify">تأكيد</button><button class="btn btn-outline" onclick="hideModal('phoneAuthModal')" data-ar="إلغاء" data-en="Cancel">إلغاء</button></div></div></div></div>
     <div class="modal" id="customerModal"><div class="modal-content"><h3 style="margin-bottom: 20px;" data-ar="عميل جديد" data-en="New Customer">عميل جديد</h3><input type="text" id="custName" class="auth-input" data-placeholder-ar="اسم العميل" data-placeholder-en="Name" autocomplete="off" data-gramm="false"><input type="text" id="custItem" class="auth-input" data-placeholder-ar="البيان (اختياري)" data-placeholder-en="Details (Optional)" autocomplete="off" data-gramm="false"><input type="number" id="custAmount" class="auth-input" data-placeholder-ar="المبلغ" data-placeholder-en="Amount" autocomplete="off" data-gramm="false"><div style="display:flex; gap:10px; margin-top:10px;"><button class="btn btn-main" onclick="addCustomer()" data-ar="حفظ" data-en="Save">حفظ</button><button class="btn btn-outline" onclick="hideModal('customerModal')" data-ar="إلغاء" data-en="Cancel">إلغاء</button></div></div></div>
     <div class="modal" id="debtModal"><div class="modal-content"><h3 style="margin-bottom: 20px;" data-ar="إضافة دين" data-en="Add Debt">إضافة دين</h3><input type="text" id="debtItem" class="auth-input" data-placeholder-ar="البيان / المنتج" data-placeholder-en="Details" autocomplete="off" data-gramm="false"><input type="number" id="debtAmount" class="auth-input" data-placeholder-ar="المبلغ" data-placeholder-en="Amount" autocomplete="off" data-gramm="false"><div style="display:flex; gap:10px; margin-top:10px;"><button class="btn" style="background:var(--danger); color:white;" onclick="addTransaction('debt')" data-ar="حفظ الدين" data-en="Save Debt">حفظ الدين</button><button class="btn btn-outline" onclick="hideModal('debtModal')" data-ar="إلغاء" data-en="Cancel">إلغاء</button></div></div></div>
     <div class="modal" id="paymentModal"><div class="modal-content"><h3 style="margin-bottom: 20px; color:var(--success);" data-ar="تسديد دفعة" data-en="Add Payment">تسديد دفعة</h3><input type="number" id="paymentAmount" class="auth-input" data-placeholder-ar="المبلغ المدفوع" data-placeholder-en="Amount Paid" autocomplete="off" data-gramm="false"><div style="display:flex; gap:10px; margin-top:10px;"><button class="btn" style="background:var(--success); color:white;" onclick="addTransaction('payment')" data-ar="تأكيد الدفع" data-en="Confirm">تأكيد الدفع</button><button class="btn btn-outline" onclick="hideModal('paymentModal')" data-ar="إلغاء" data-en="Cancel">إلغاء</button></div></div></div>
     <div class="modal" id="editModal"><div class="modal-content"><h3 style="margin-bottom: 20px; color:var(--warning);" data-ar="تعديل العملية" data-en="Edit Record">تعديل العملية</h3><input type="text" id="editItem" class="auth-input" data-placeholder-ar="البيان" data-placeholder-en="Details" autocomplete="off" data-gramm="false"><input type="number" id="editAmount" class="auth-input" data-placeholder-ar="المبلغ" data-placeholder-en="Amount" autocomplete="off" data-gramm="false"><div style="display:flex; gap:10px; margin-top:10px;"><button class="btn" style="background:var(--warning); color:white;" onclick="saveEdit()" data-ar="تحديث" data-en="Update">تحديث</button><button class="btn btn-outline" onclick="hideModal('editModal')" data-ar="إلغاء" data-en="Cancel">إلغاء</button></div></div></div>
     <script>
-        // كود لتنظيف أي أزرار غريبة من الشاشة بالقوة
-        setInterval(() => { document.querySelectorAll('grammarly-desktop-integration, grammarly-extension').forEach(e => e.remove()); }, 1000);
-
         function showAlert(msg, type='info') { document.getElementById('customAlertMsg').innerText = msg; const icon = document.getElementById('customAlertIcon'); if(type === 'error') { icon.innerHTML = '<i class="fas fa-times-circle"></i>'; icon.style.color = 'var(--danger)'; document.getElementById('customAlertTitle').innerText = isArabic ? 'خطأ' : 'Error'; } else if(type === 'success') { icon.innerHTML = '<i class="fas fa-check-circle"></i>'; icon.style.color = 'var(--success)'; document.getElementById('customAlertTitle').innerText = isArabic ? 'نجاح' : 'Success'; } else { icon.innerHTML = '<i class="fas fa-info-circle"></i>'; icon.style.color = 'var(--primary)'; document.getElementById('customAlertTitle').innerText = isArabic ? 'تنبيه' : 'Notice'; } showModal('customAlertModal'); }
         let currentConfirmAction = null; function showConfirm(msg, action) { document.getElementById('customConfirmMsg').innerText = msg; currentConfirmAction = action; showModal('customConfirmModal'); } function executeConfirm() { hideModal('customConfirmModal'); if(currentConfirmAction) currentConfirmAction(); }
         const isArabic = navigator.language.toLowerCase().startsWith('ar'); document.documentElement.dir = isArabic ? 'rtl' : 'ltr'; document.querySelectorAll('[data-ar]').forEach(el => el.innerHTML = isArabic ? el.getAttribute('data-ar') : el.getAttribute('data-en')); document.querySelectorAll('[data-placeholder-ar]').forEach(el => el.placeholder = isArabic ? el.getAttribute('data-placeholder-ar') : el.getAttribute('data-placeholder-en')); if(!isArabic) document.querySelectorAll('.fa-arrow-left').forEach(i => i.classList.replace('fa-arrow-left', 'fa-arrow-right'));
@@ -189,11 +180,11 @@
         firebase.initializeApp(firebaseConfig); const db = firebase.firestore(); const auth = firebase.auth();
         try { db.enablePersistence({ synchronizeTabs: true }); } catch (err) {}
 
-        let currentUser = null; let customers = []; let currentCustomerId = null; let editTransactionId = null; let confirmationResult = null;
+        let currentUser = null; let customers = []; let currentCustomerId = null; let editTransactionId = null;
 
         auth.onAuthStateChanged(user => {
             document.getElementById('splashScreen').style.display = 'none';
-            if (user) { currentUser = user; document.getElementById('authView').style.display = 'none'; hideModal('phoneAuthModal'); document.getElementById('appView').style.display = 'block'; document.getElementById('sidebarUserEmail').innerText = user.email || user.phoneNumber || 'User'; loadData(); } 
+            if (user) { currentUser = user; document.getElementById('authView').style.display = 'none'; document.getElementById('appView').style.display = 'block'; document.getElementById('sidebarUserEmail').innerText = user.email || 'User'; loadData(); } 
             else { currentUser = null; document.getElementById('authView').style.display = 'flex'; document.getElementById('appView').style.display = 'none'; }
         });
 
@@ -201,9 +192,6 @@
         function emailLogin() { const email = document.getElementById('loginEmail').value; const pass = document.getElementById('loginPass').value; if(!email || !pass) return showAlert(isArabic ? "أدخل البيانات أولاً" : "Enter credentials", 'error'); auth.signInWithEmailAndPassword(email, pass).catch(err => showAlert(err.message, 'error')); }
         function emailRegister() { const email = document.getElementById('regEmail').value; const pass = document.getElementById('regPass').value; if(!email || !pass) return showAlert(isArabic ? "أدخل البيانات أولاً" : "Enter credentials", 'error'); auth.createUserWithEmailAndPassword(email, pass).then(() => { showAlert(isArabic ? "تم إنشاء الحساب بنجاح!" : "Account Created", 'success'); toggleAuthForm(); }).catch(err => showAlert(err.message, 'error')); }
         
-        function googleLogin() { showAlert(isArabic ? "لضمان أمان حسابك في هذا الإصدار، استخدم البريد الإلكتروني وكلمة المرور." : "Please use Email & Password for security.", 'info'); }
-        function openPhoneAuth() { showAlert(isArabic ? "يرجى استخدام البريد الإلكتروني للتسجيل بشكل أسرع وأكثر استقراراً." : "Please use Email for faster login.", 'info'); }
-
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('sidebarOverlay').classList.toggle('active'); }
         function logout() { toggleSidebar(); auth.signOut(); }
 
