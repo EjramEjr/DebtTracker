@@ -22,24 +22,38 @@ jobs:
           distribution: 'zulu'
           java-version: '21'
 
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Obfuscate JavaScript for Maximum Security
+      - name: Install Dependencies & AdMob Plugin
         run: |
-          npm install -g javascript-obfuscator
-          cat << 'SCRIPT' > obfuscate.js
-          const fs = require('fs');
-          const obfuscator = require('javascript-obfuscator');
-          let html = fs.readFileSync('www/index.html', 'utf8');
-          let scriptRegex = /<script>([\s\S]*?)<\/script>/g;
-          html = html.replace(scriptRegex, (match, p1) => {
-              let obfuscated = obfuscator.obfuscate(p1, { compact: true, controlFlowFlattening: true, stringArray: true }).getObfuscatedCode();
-              return '<script>' + obfuscated + '<\/script>';
-          });
-          fs.writeFileSync('www/index.html', html);
-          SCRIPT
-          node obfuscate.js
+          npm install
+          npm install @capacitor-community/admob
+          npm install -g esbuild
+
+      - name: Cloud Inject AdMob Logic
+        run: |
+          cat << 'JS' > ads.js
+          import { AdMob } from '@capacitor-community/admob';
+          window.initAdMob = async function() {
+              try {
+                  await AdMob.initialize({});
+                  await AdMob.showBanner({
+                      adId: 'ca-app-pub-3940256099942544/6300978111',
+                      adSize: 'BANNER',
+                      position: 'BOTTOM_CENTER',
+                      margin: 0
+                  });
+                  document.body.style.paddingBottom = '50px'; // لرفع محتوى التطبيق فوق الإعلان
+                  await AdMob.prepareInterstitial({ adId: 'ca-app-pub-3940256099942544/1033173712' });
+              } catch (e) { console.error('AdMob Error', e); }
+          };
+          window.showFullScreenAd = async function() {
+              try {
+                  await AdMob.showInterstitial();
+                  await AdMob.prepareInterstitial({ adId: 'ca-app-pub-3940256099942544/1033173712' });
+              } catch (e) { console.error('Interstitial Error', e); }
+          };
+          JS
+          esbuild ads.js --bundle --minify --outfile=www/ads-bundle.js
+          sed -i 's/<\/body>/<script src="ads-bundle.js"><\/script><script>if(window.initAdMob) initAdMob();<\/script><\/body>/' www/index.html
 
       - name: Rebuild Fresh Android Folder
         run: |
@@ -47,7 +61,11 @@ jobs:
           npx cap add android
           npx cap sync android
 
-      - name: Inject Arabic App Name (Localization)
+      - name: Inject AdMob App ID to AndroidManifest
+        run: |
+          sed -i '/<application/a \        <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="ca-app-pub-3940256099942544~3347511713"/>' android/app/src/main/AndroidManifest.xml
+
+      - name: Inject Arabic App Name
         run: |
           mkdir -p android/app/src/main/res/values-ar
           cat << 'XML' > android/app/src/main/res/values-ar/strings.xml
@@ -94,6 +112,18 @@ jobs:
             ],
             "configuration_version": "1"
           }' > android/app/google-services.json
+
+      - name: Obfuscate Code
+        run: |
+          npm install -g javascript-obfuscator
+          cat << 'SCRIPT' > obfuscate.js
+          const fs = require('fs'); const obfuscator = require('javascript-obfuscator');
+          let html = fs.readFileSync('www/index.html', 'utf8');
+          let scriptRegex = /<script>([\s\S]*?)<\/script>/g;
+          html = html.replace(scriptRegex, (match, p1) => { return '<script>' + obfuscator.obfuscate(p1, { compact: true, controlFlowFlattening: true }).getObfuscatedCode() + '<\/script>'; });
+          fs.writeFileSync('www/index.html', html);
+          SCRIPT
+          node obfuscate.js
 
       - name: Build APK
         run: |
