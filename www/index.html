@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
     <title>Debt Ledger</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -16,7 +16,7 @@
         :root { --primary: #6366f1; --secondary: #ec4899; --success: #10b981; --warning: #f59e0b; --danger: #ef4444; --dark: #0f172a; --dark-light: #1e293b; --light: #f8fafc; --gray: #94a3b8; --radius: 16px; --radius-sm: 12px; --transition: all 0.3s ease; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; }
         input { user-select: auto; }
-        body { background: linear-gradient(135deg, #0f172a, #1e1b4b, #312e81); min-height: 100vh; color: var(--light); overflow-x: hidden; padding-top: env(safe-area-inset-top); }
+        body { background: linear-gradient(135deg, #0f172a, #1e1b4b, #312e81); min-height: 100vh; color: var(--light); overflow-x: hidden; padding-top: env(safe-area-inset-top); display: flex; flex-direction: column; }
         
         #splashScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #0f172a, #1e1b4b); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .spinner { width: 50px; height: 50px; border: 5px solid rgba(255,255,255,0.1); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-top: 20px; }
@@ -57,33 +57,39 @@
         .stat-card { background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01)); padding: 20px; border-radius: var(--radius); text-align: center; border: 1px solid rgba(255,255,255,0.05); }
         .stat-value { font-size: 1.8rem; font-weight: 800; margin: 10px 0; }
         
-        .customers-container { padding: 0 20px 80px; display: grid; gap: 12px; }
+        .customers-container { padding: 0 20px 20px; display: grid; gap: 12px; }
         .customer-card { background: rgba(255, 255, 255, 0.03); padding: 18px; border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .customer-info h3 { font-size: 1.1rem; margin-bottom: 4px; }
         .customer-debt { font-size: 1.3rem; font-weight: bold; color: var(--secondary); }
         
-        #detailView { display: none; padding: 20px; padding-bottom: 90px; }
+        #detailView { display: none; padding: 20px; padding-bottom: 40px; }
         .detail-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .total-box { text-align: center; padding: 25px; background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01)); border-radius: var(--radius); margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
-        .total-amount { font-size: 2.8rem; color: var(--primary); font-weight: 800; }
+        .total-amount { font-size: 2.8rem; color: var(--primary); font-weight: 900; }
         
-        .debt-item { background: rgba(255,255,255,0.03); padding: 18px 15px; border-radius: var(--radius-sm); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.05); position: relative; overflow: hidden; }
-        .debt-item::before { content: ''; position: absolute; top: 0; right: 0; width: 4px; height: 100%; background: var(--danger); }
-        html[dir="ltr"] .debt-item::before { right: auto; left: 0; }
-        .debt-item.payment::before { background: var(--success); }
-        .debt-item-details { display: flex; flex-direction: column; gap: 5px; }
-        .debt-item-title { font-weight: 700; font-size: 1.1rem; color: #fff; }
-        .debt-item-date { font-size: 0.8rem; color: var(--gray); }
-        .debt-item-actions { display: flex; align-items: center; gap: 15px; }
-        .debt-amount { font-weight: 800; font-size: 1.3rem; }
-        .debt-item.payment .debt-amount { color: var(--success); }
-        .debt-item.debt .debt-amount { color: var(--danger); }
-        .action-icons i { color: rgba(255,255,255,0.4); padding: 10px; font-size: 1.1rem; cursor: pointer; background: rgba(255,255,255,0.05); border-radius: 8px; transition: var(--transition); }
-        .action-icons i:hover { color: white; background: rgba(255,255,255,0.1); }
+        /* التنسيق الجديد الفاخر لشرائح المدخلات */
+        .debt-item { background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01)); padding: 16px; border-radius: var(--radius-sm); margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: space-between; gap: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); position: relative; overflow: hidden; }
+        .debt-item::after { content: ''; position: absolute; top: 0; right: 0; width: 5px; height: 100%; background: var(--danger); }
+        html[dir="ltr"] .debt-item::after { right: auto; left: 0; }
+        .debt-item.payment::after { background: var(--success); }
+        .debt-info-group { display: flex; flex-direction: column; gap: 6px; flex: 1; overflow: hidden; }
+        .debt-item-title { font-weight: 800; font-size: 1.15rem; color: #fff; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .debt-item-date { font-size: 0.8rem; color: var(--gray); display: flex; align-items: center; gap: 5px; }
+        .debt-amount-group { font-weight: 900; font-size: 1.4rem; letter-spacing: 0.5px; text-align: center; min-width: 80px; }
+        .debt-item.payment .debt-amount-group { color: var(--success); }
+        .debt-item.debt .debt-amount-group { color: var(--danger); }
+        .debt-actions-group { display: flex; gap: 8px; }
+        .action-icon-btn { width: 38px; height: 38px; border-radius: 10px; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.7); font-size: 1.1rem; cursor: pointer; transition: var(--transition); border: 1px solid transparent; }
+        .action-icon-btn.edit:active { background: rgba(245, 158, 11, 0.2); color: var(--warning); border-color: var(--warning); }
+        .action-icon-btn.delete:active { background: rgba(239, 68, 68, 0.2); color: var(--danger); border-color: var(--danger); }
         
         .ejram-secure-add-btn { position: fixed; bottom: 30px; left: 30px; width: 65px; height: 65px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; cursor: pointer; box-shadow: 0 8px 25px rgba(236,72,153,0.4); display: flex; align-items: center; justify-content: center; z-index: 90; }
         html[dir="ltr"] .ejram-secure-add-btn { left: auto; right: 30px; } 
         .ejram-secure-add-btn.hidden { transform: scale(0); opacity: 0; pointer-events: none; }
+        
+        /* حقوق الملكية */
+        .copyright-footer { text-align: center; padding: 30px 20px; color: var(--gray); font-size: 0.95rem; margin-top: auto; }
+        .copyright-footer a { color: #3b82f6; text-decoration: none; font-weight: 800; font-size: 1.05rem; }
         
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: var(--transition); }
         .modal.active { opacity: 1; pointer-events: auto; }
@@ -126,25 +132,27 @@
                 </form>
             </div>
         </div>
+        <div class="copyright-footer">Developed by <a href="https://www.facebook.com/EjramGamer07" target="_blank">Amr Gamal</a> &copy; 2026</div>
     </div>
 
-    <div id="appView" style="display: none;">
+    <div id="appView" style="display: none; flex: 1;">
         <header class="header">
             <button style="background:none; border:none; color:white; font-size:1.4rem; cursor:pointer;" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
             <div class="logo"><i class="fas fa-wallet" style="font-size: 1rem;"></i> <span data-ar="دفتر الديون" data-en="Debt Ledger">دفتر الديون</span></div>
             <div class="sync-badge" id="syncBadge"><i class="fas fa-sync fa-spin"></i></div>
         </header>
 
-        <div id="dashboardView">
+        <div id="dashboardView" style="display: flex; flex-direction: column; flex: 1;">
             <div class="search-container"><input type="search" id="searchInput" class="search-input" data-placeholder-ar="ابحث عن اسم العميل..." data-placeholder-en="Search customer..." oninput="filterCustomers()"></div>
             <div class="stats-container">
                 <div class="stat-card"><i class="fas fa-users" style="color:var(--primary); font-size: 2.2rem; margin-bottom:5px;"></i><div class="stat-value" id="totalCustomers">0</div><div style="color:var(--gray);" data-ar="العملاء" data-en="Customers">العملاء</div></div>
                 <div class="stat-card"><i class="fas fa-money-bill-wave" style="color:var(--secondary); font-size: 2.2rem; margin-bottom:5px;"></i><div class="stat-value" id="totalDebt">0</div><div style="color:var(--gray);" data-ar="إجمالي الديون" data-en="Total Debt">إجمالي الديون</div></div>
             </div>
             <div class="customers-container" id="customersList"></div>
+            <div class="copyright-footer">Developed by <a href="https://www.facebook.com/EjramGamer07" target="_blank">Amr Gamal</a> &copy; 2026</div>
         </div>
 
-        <div id="detailView">
+        <div id="detailView" style="flex: 1;">
             <div class="detail-header">
                 <h2 id="customerNameTitle">Customer</h2>
                 <div style="display:flex; gap:10px;">
@@ -158,13 +166,12 @@
                 <button class="btn" style="background:var(--success);" onclick="openModal('paymentModal')"><i class="fas fa-hand-holding-usd"></i> <span data-ar="تسديد" data-en="Payment">تسديد</span></button>
             </div>
             <h3 style="margin: 0 0 15px; padding-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.1);" data-ar="سجل العمليات" data-en="History">سجل العمليات</h3>
-            <div id="debtsList"></div>
+            <div id="debtsList" style="margin-bottom: 60px;"></div>
+            <div class="copyright-footer" style="padding-bottom: 80px;">Developed by <a href="https://www.facebook.com/EjramGamer07" target="_blank">Amr Gamal</a> &copy; 2026</div>
         </div>
     </div>
 
-    <button class="ejram-secure-add-btn" id="mainFab" onclick="openModal('customerModal')">
-        <svg viewBox="0 0 24 24" width="30" height="30" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-    </button>
+    <button class="ejram-secure-add-btn" id="mainFab" onclick="openModal('customerModal')"><svg viewBox="0 0 24 24" width="30" height="30" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></button>
 
     <div class="modal" id="customAlertModal"><div class="modal-content"><div id="customAlertIcon" style="font-size:3rem; color:var(--primary); margin-bottom:15px;"><i class="fas fa-info-circle"></i></div><h3 id="customAlertTitle" style="margin-bottom:10px;">تنبيه</h3><p id="customAlertMsg" style="color:var(--gray); margin-bottom:20px; font-size:0.95rem;"></p><button class="btn btn-main" onclick="hideModal('customAlertModal')" data-ar="حسناً" data-en="OK">حسناً</button></div></div>
     <div class="modal" id="customConfirmModal"><div class="modal-content"><div style="font-size:3rem; color:var(--danger); margin-bottom:15px;"><i class="fas fa-exclamation-triangle"></i></div><h3 data-ar="تأكيد الحذف" data-en="Confirm Delete">تأكيد الحذف</h3><p id="customConfirmMsg" style="color:var(--gray); margin-bottom:20px; font-size:0.95rem;"></p><div style="display:flex; gap:10px;"><button class="btn" style="background:var(--danger); color:white;" onclick="executeConfirm()" data-ar="نعم، احذف" data-en="Yes, Delete">نعم، احذف</button><button class="btn btn-outline" onclick="hideModal('customConfirmModal')" data-ar="إلغاء" data-en="Cancel">إلغاء</button></div></div></div>
@@ -172,9 +179,7 @@
     <div class="modal" id="debtModal"><div class="modal-content"><h3 style="margin-bottom: 20px;" data-ar="إضافة دين" data-en="Add Debt">إضافة دين</h3><div class="input-group"><input type="text" id="debtItem" class="auth-input" data-placeholder-ar="البيان / المنتج" data-placeholder-en="Details" autocomplete="off"></div><div class="input-group"><input type="number" id="debtAmount" class="auth-input" data-placeholder-ar="المبلغ" data-placeholder-en="Amount" autocomplete="off"></div><div style="display:flex; gap:10px; margin-top:10px;"><button class="btn" style="background:var(--danger); color:white;" onclick="addTransaction('debt')" data-ar="حفظ الدين" data-en="Save Debt">حفظ الدين</button><button class="btn btn-outline" onclick="hideModal('debtModal')" data-ar="إلغاء" data-en="Cancel">إلغاء</button></div></div></div>
     <div class="modal" id="paymentModal"><div class="modal-content"><h3 style="margin-bottom: 20px; color:var(--success);" data-ar="تسديد دفعة" data-en="Add Payment">تسديد دفعة</h3><div class="input-group"><input type="number" id="paymentAmount" class="auth-input" data-placeholder-ar="المبلغ المدفوع" data-placeholder-en="Amount Paid" autocomplete="off"></div><div style="display:flex; gap:10px; margin-top:10px;"><button class="btn" style="background:var(--success); color:white;" onclick="addTransaction('payment')" data-ar="تأكيد الدفع" data-en="Confirm">تأكيد الدفع</button><button class="btn btn-outline" onclick="hideModal('paymentModal')" data-ar="إلغاء" data-en="Cancel">إلغاء</button></div></div></div>
     <div class="modal" id="editModal"><div class="modal-content"><h3 style="margin-bottom: 20px; color:var(--warning);" data-ar="تعديل العملية" data-en="Edit Record">تعديل العملية</h3><div class="input-group"><input type="text" id="editItem" class="auth-input" data-placeholder-ar="البيان" data-placeholder-en="Details" autocomplete="off"></div><div class="input-group"><input type="number" id="editAmount" class="auth-input" data-placeholder-ar="المبلغ" data-placeholder-en="Amount" autocomplete="off"></div><div style="display:flex; gap:10px; margin-top:10px;"><button class="btn" style="background:var(--warning); color:white;" onclick="saveEdit()" data-ar="تحديث" data-en="Update">تحديث</button><button class="btn btn-outline" onclick="hideModal('editModal')" data-ar="إلغاء" data-en="Cancel">إلغاء</button></div></div></div>
-
     <script>
-        setInterval(() => { document.querySelectorAll('grammarly-desktop-integration, grammarly-extension').forEach(e => e.remove()); }, 1000);
         function showAlert(msg, type='info') { document.getElementById('customAlertMsg').innerText = msg; const icon = document.getElementById('customAlertIcon'); if(type === 'error') { icon.innerHTML = '<i class="fas fa-times-circle"></i>'; icon.style.color = 'var(--danger)'; document.getElementById('customAlertTitle').innerText = isArabic ? 'خطأ' : 'Error'; } else if(type === 'success') { icon.innerHTML = '<i class="fas fa-check-circle"></i>'; icon.style.color = 'var(--success)'; document.getElementById('customAlertTitle').innerText = isArabic ? 'نجاح' : 'Success'; } else { icon.innerHTML = '<i class="fas fa-info-circle"></i>'; icon.style.color = 'var(--primary)'; document.getElementById('customAlertTitle').innerText = isArabic ? 'تنبيه' : 'Notice'; } showModal('customAlertModal'); }
         let currentConfirmAction = null; function showConfirm(msg, action) { document.getElementById('customConfirmMsg').innerText = msg; currentConfirmAction = action; showModal('customConfirmModal'); } function executeConfirm() { hideModal('customConfirmModal'); if(currentConfirmAction) currentConfirmAction(); }
         const isArabic = navigator.language.toLowerCase().startsWith('ar'); document.documentElement.dir = isArabic ? 'rtl' : 'ltr'; document.querySelectorAll('[data-ar]').forEach(el => el.innerHTML = isArabic ? el.getAttribute('data-ar') : el.getAttribute('data-en')); document.querySelectorAll('[data-placeholder-ar]').forEach(el => el.placeholder = isArabic ? el.getAttribute('data-placeholder-ar') : el.getAttribute('data-placeholder-en')); if(!isArabic) document.querySelectorAll('.fa-arrow-left').forEach(i => i.classList.replace('fa-arrow-left', 'fa-arrow-right'));
@@ -188,7 +193,7 @@
 
         auth.onAuthStateChanged(user => {
             document.getElementById('splashScreen').style.display = 'none';
-            if (user) { currentUser = user; document.getElementById('authView').style.display = 'none'; document.getElementById('appView').style.display = 'block'; document.getElementById('sidebarUserEmail').innerText = user.email || 'User'; loadData(); } 
+            if (user) { currentUser = user; document.getElementById('authView').style.display = 'none'; document.getElementById('appView').style.display = 'flex'; document.getElementById('sidebarUserEmail').innerText = user.email || 'User'; loadData(); } 
             else { currentUser = null; document.getElementById('authView').style.display = 'flex'; document.getElementById('appView').style.display = 'none'; }
         });
 
@@ -214,13 +219,26 @@
         }
 
         function openCustomer(id) { currentCustomerId = id; document.getElementById('dashboardView').style.display = 'none'; document.getElementById('detailView').style.display = 'block'; document.getElementById('mainFab').classList.add('hidden'); renderDetail(); }
-        function goBack() { currentCustomerId = null; document.getElementById('detailView').style.display = 'none'; document.getElementById('dashboardView').style.display = 'block'; document.getElementById('mainFab').classList.remove('hidden'); }
+        function goBack() { currentCustomerId = null; document.getElementById('detailView').style.display = 'none'; document.getElementById('dashboardView').style.display = 'flex'; document.getElementById('mainFab').classList.remove('hidden'); }
+        
         function renderDetail() {
             const c = customers.find(x => x.id === currentCustomerId); if(!c) return goBack();
             document.getElementById('customerNameTitle').innerText = c.name; document.getElementById('customerTotalDebt').innerText = formatNum(calcCustomerTotal(c));
             const list = document.getElementById('debtsList'); if(!c.transactions || c.transactions.length === 0) { list.innerHTML = `<div style="text-align:center; color:var(--gray); padding:20px;">${isArabic ? "لا توجد عمليات" : "No records"}</div>`; return; }
             const sorted = [...c.transactions].sort((a,b) => new Date(b.date) - new Date(a.date));
-            list.innerHTML = sorted.map(t => `<div class="debt-item ${t.type}"><div class="debt-item-details"><div class="debt-item-title">${t.type === 'payment' ? (isArabic ? 'دفعة مسددة' : 'Payment') : (t.item || '-')}</div><div class="debt-item-date"><i class="far fa-clock"></i> ${formatDate(t.date)}</div></div><div class="debt-item-actions"><span class="debt-amount">${t.type === 'payment' ? '-' : '+'}${formatNum(t.amount)}</span><div class="action-icons"><i class="fas fa-pen" onclick="openEditDialog('${t.id}')"></i> <i class="fas fa-trash" onclick="deleteTransactionConfirm('${t.id}')"></i></div></div></div>`).join('');
+            list.innerHTML = sorted.map(t => `
+                <div class="debt-item ${t.type}">
+                    <div class="debt-info-group">
+                        <div class="debt-item-title">${t.type === 'payment' ? (isArabic ? 'دفعة مسددة' : 'Payment') : (t.item || '-')}</div>
+                        <div class="debt-item-date"><i class="far fa-clock"></i> ${formatDate(t.date)}</div>
+                    </div>
+                    <div class="debt-amount-group">${t.type === 'payment' ? '-' : '+'}${formatNum(t.amount)}</div>
+                    <div class="debt-actions-group">
+                        <div class="action-icon-btn edit" onclick="openEditDialog('${t.id}')"><i class="fas fa-pen"></i></div>
+                        <div class="action-icon-btn delete" onclick="deleteTransactionConfirm('${t.id}')"><i class="fas fa-trash"></i></div>
+                    </div>
+                </div>
+            `).join('');
         }
 
         function openModal(id) { if(id==='customerModal') { document.getElementById('custName').value = ''; document.getElementById('custItem').value = ''; document.getElementById('custAmount').value = ''; } if(id==='debtModal') { document.getElementById('debtItem').value = ''; document.getElementById('debtAmount').value = ''; } if(id==='paymentModal') { document.getElementById('paymentAmount').value = ''; } showModal(id); }
