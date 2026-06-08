@@ -20,20 +20,18 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
         body { background: linear-gradient(135deg, #0f172a, #1e1b4b, #312e81); min-height: 100vh; color: var(--light); overflow-x: hidden; padding-top: env(safe-area-inset-top); }
         
-        /* تنسيق شاشة الدخول المطور */
         #authView { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--dark); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
         .auth-card { background: rgba(255,255,255,0.03); padding: 35px 25px; border-radius: var(--radius); width: 100%; max-width: 380px; text-align: center; border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(15px); box-shadow: 0 15px 35px rgba(0,0,0,0.3); }
         .auth-card h2 { margin-bottom: 10px; color: var(--primary); font-size: 1.8rem; }
         .auth-input { width: 100%; padding: 14px; margin-bottom: 15px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: white; outline: none; transition: var(--transition); font-size: 0.95rem; }
         .auth-input:focus { border-color: var(--primary); background: rgba(0,0,0,0.5); }
-        .auth-btn { width: 100%; padding: 14px; border: none; border-radius: var(--radius-sm); font-weight: bold; cursor: pointer; transition: var(--transition); font-size: 0.95rem; }
+        .btn { padding: 14px; border: none; border-radius: var(--radius-sm); font-weight: bold; cursor: pointer; transition: var(--transition); font-size: 0.95rem; width: 100%; }
         .btn-main { background: var(--primary); color: white; }
-        .btn-main:hover { background: var(--primary-dark); }
+        .btn-main:hover { background: #4f46e5; }
         .btn-outline { background: transparent; color: white; border: 1px solid rgba(255,255,255,0.2); }
-        .btn-outline:hover { background: rgba(255,255,255,0.05); }
         .btn-social { background: rgba(255,255,255,0.05); color: white; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; }
-        .btn-social.google:hover { background: #db4437; border-color: transparent; }
-        .btn-social.phone:hover { background: var(--success); border-color: transparent; }
+        .btn-social.google { background: #db4437; border-color: transparent; }
+        .btn-social.phone { background: var(--success); border-color: transparent; }
         
         .header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .logo { font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -62,7 +60,7 @@
         .fab.hidden { transform: scale(0); opacity: 0; pointer-events: none; }
         
         .action-buttons { display: flex; gap: 10px; margin-top: 20px; }
-        .btn { flex: 1; padding: 15px; border-radius: var(--radius-sm); border: none; color: white; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
+        .btn-action { flex: 1; padding: 15px; border-radius: var(--radius-sm); border: none; color: white; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
         
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: var(--transition); }
         .modal.active { opacity: 1; pointer-events: auto; }
@@ -83,8 +81,8 @@
             <input type="password" id="passwordInput" class="auth-input" placeholder="كلمة المرور">
             
             <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                <button class="auth-btn btn-main" style="margin-bottom: 0;" onclick="emailLogin()">دخول</button>
-                <button class="auth-btn btn-outline" style="margin-bottom: 0;" onclick="emailRegister()">حساب جديد</button>
+                <button class="btn btn-main" onclick="emailLogin()">دخول</button>
+                <button class="btn btn-outline" onclick="emailRegister()">حساب جديد</button>
             </div>
             
             <div style="display: flex; align-items: center; margin: 20px 0; color: var(--gray); font-size: 0.85rem;">
@@ -93,10 +91,34 @@
                 <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
             </div>
             
-            <button class="auth-btn btn-social google" onclick="alert('للتفعيل، اربط المفاتيح بلوحة التحكم أولاً')"><i class="fab fa-google"></i> حساب جوجل</button>
-            <button class="auth-btn btn-social phone" onclick="alert('للتفعيل، اربط المفاتيح بلوحة التحكم أولاً')"><i class="fas fa-phone"></i> رقم الهاتف</button>
+            <button class="btn btn-social google" onclick="googleLogin()"><i class="fab fa-google"></i> حساب جوجل</button>
+            <button class="btn btn-social phone" onclick="openPhoneAuth()"><i class="fas fa-phone"></i> رقم الهاتف</button>
         </div>
         <div class="copyright">Developed by <span>Ejram</span> &copy; 2026</div>
+    </div>
+
+    <div class="modal" id="phoneAuthModal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 20px; text-align:center;">الدخول برقم الهاتف</h3>
+            
+            <div id="phoneStep1">
+                <input type="tel" id="phoneNumber" class="auth-input" placeholder="مثال: +201012345678" dir="ltr" style="text-align:center;">
+                <div id="recaptcha-container" style="margin-bottom: 15px; display:flex; justify-content:center;"></div>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn btn-main" onclick="sendSmsCode()">إرسال الرمز</button>
+                    <button class="btn btn-outline" onclick="hideModal('phoneAuthModal')">إلغاء</button>
+                </div>
+            </div>
+
+            <div id="phoneStep2" style="display: none;">
+                <p style="text-align:center; color:var(--gray); margin-bottom:15px;">تم إرسال رمز التحقق إلى هاتفك</p>
+                <input type="text" id="smsCode" class="auth-input" placeholder="الرمز المكون من 6 أرقام" dir="ltr" style="text-align:center;">
+                <div style="display:flex; gap:10px;">
+                    <button class="btn" style="background:var(--success); color:white;" onclick="verifySmsCode()">تأكيد الدخول</button>
+                    <button class="btn btn-outline" onclick="hideModal('phoneAuthModal')">إلغاء</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div id="appView" style="display: none;">
@@ -135,8 +157,8 @@
                 <div class="total-amount" id="customerTotalDebt">0</div>
             </div>
             <div class="action-buttons">
-                <button class="btn" style="background:var(--danger);" onclick="showModal('debtModal')"><i class="fas fa-plus"></i> إضافة دين</button>
-                <button class="btn" style="background:var(--success);" onclick="showModal('paymentModal')"><i class="fas fa-hand-holding-usd"></i> تسديد دفعة</button>
+                <button class="btn-action" style="background:var(--danger);" onclick="showModal('debtModal')"><i class="fas fa-plus"></i> إضافة دين</button>
+                <button class="btn-action" style="background:var(--success);" onclick="showModal('paymentModal')"><i class="fas fa-hand-holding-usd"></i> تسديد دفعة</button>
             </div>
             <h3 style="margin: 20px 0 10px;">سجل العمليات</h3>
             <div id="debtsList"></div>
@@ -152,8 +174,8 @@
             <input type="text" id="custItem" class="auth-input" placeholder="المنتج الأول (اختياري)">
             <input type="number" id="custAmount" class="auth-input" placeholder="المبلغ">
             <div style="display:flex; gap:10px; margin-top:20px;">
-                <button class="btn" style="background:var(--primary);" onclick="addCustomer()">حفظ</button>
-                <button class="btn" style="background:rgba(255,255,255,0.1);" onclick="hideModal('customerModal')">إلغاء</button>
+                <button class="btn btn-main" onclick="addCustomer()">حفظ</button>
+                <button class="btn btn-outline" onclick="hideModal('customerModal')">إلغاء</button>
             </div>
         </div>
     </div>
@@ -164,8 +186,8 @@
             <input type="text" id="debtItem" class="auth-input" placeholder="اسم المنتج">
             <input type="number" id="debtAmount" class="auth-input" placeholder="المبلغ">
             <div style="display:flex; gap:10px; margin-top:20px;">
-                <button class="btn" style="background:var(--danger);" onclick="addTransaction('debt')">تسجيل الدين</button>
-                <button class="btn" style="background:rgba(255,255,255,0.1);" onclick="hideModal('debtModal')">إلغاء</button>
+                <button class="btn" style="background:var(--danger); color:white;" onclick="addTransaction('debt')">تسجيل الدين</button>
+                <button class="btn btn-outline" onclick="hideModal('debtModal')">إلغاء</button>
             </div>
         </div>
     </div>
@@ -175,8 +197,8 @@
             <h3 style="margin-bottom: 20px; color:var(--success);">تسديد دفعة مالية</h3>
             <input type="number" id="paymentAmount" class="auth-input" placeholder="المبلغ المدفوع">
             <div style="display:flex; gap:10px; margin-top:20px;">
-                <button class="btn" style="background:var(--success);" onclick="addTransaction('payment')">تأكيد الدفع</button>
-                <button class="btn" style="background:rgba(255,255,255,0.1);" onclick="hideModal('paymentModal')">إلغاء</button>
+                <button class="btn" style="background:var(--success); color:white;" onclick="addTransaction('payment')">تأكيد الدفع</button>
+                <button class="btn btn-outline" onclick="hideModal('paymentModal')">إلغاء</button>
             </div>
         </div>
     </div>
@@ -196,11 +218,14 @@
         let currentUser = null;
         let customers = [];
         let currentCustomerId = null;
+        let confirmationResult = null;
 
+        // مراقبة حالة الدخول
         auth.onAuthStateChanged(user => {
             if (user) {
                 currentUser = user;
                 document.getElementById('authView').style.display = 'none';
+                hideModal('phoneAuthModal');
                 document.getElementById('appView').style.display = 'block';
                 loadData();
             } else {
@@ -210,6 +235,7 @@
             }
         });
 
+        /* --- أنظمة تسجيل الدخول --- */
         function emailLogin() {
             const email = document.getElementById('emailInput').value;
             const pass = document.getElementById('passwordInput').value;
@@ -226,8 +252,52 @@
                 .catch(err => alert("خطأ في الإنشاء: " + err.message));
         }
 
+        function googleLogin() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithRedirect(provider).catch(err => alert("خطأ في تسجيل الدخول عبر جوجل: " + err.message));
+        }
+
+        function openPhoneAuth() {
+            showModal('phoneAuthModal');
+            document.getElementById('phoneStep1').style.display = 'block';
+            document.getElementById('phoneStep2').style.display = 'none';
+            
+            if(!window.recaptchaVerifier) {
+                window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+                    'size': 'normal'
+                });
+                window.recaptchaVerifier.render();
+            }
+        }
+
+        function sendSmsCode() {
+            const number = document.getElementById('phoneNumber').value;
+            if(!number.startsWith('+')) return alert("الرجاء كتابة رقم الهاتف مع رمز الدولة (مثال: +2010...)");
+            
+            const appVerifier = window.recaptchaVerifier;
+            auth.signInWithPhoneNumber(number, appVerifier)
+                .then((confirmation) => {
+                    confirmationResult = confirmation;
+                    document.getElementById('phoneStep1').style.display = 'none';
+                    document.getElementById('phoneStep2').style.display = 'block';
+                }).catch((error) => {
+                    alert("تعذر إرسال الرمز: " + error.message);
+                    if(window.recaptchaVerifier) window.recaptchaVerifier.render().then(wId => grecaptcha.reset(wId));
+                });
+        }
+
+        function verifySmsCode() {
+            const code = document.getElementById('smsCode').value;
+            if(!code) return alert("أدخل الرمز أولاً");
+            
+            confirmationResult.confirm(code).catch((error) => {
+                alert("الرمز غير صحيح، حاول مرة أخرى.");
+            });
+        }
+
         function logout() { auth.signOut(); }
 
+        /* --- العمليات وقاعدة البيانات --- */
         function loadData() {
             db.collection('users').doc(currentUser.uid).collection('customers').onSnapshot(snapshot => {
                 customers = [];
@@ -339,7 +409,7 @@
         }
 
         async function deleteTransaction(tid) {
-            if(!confirm("حذف هذه العملية؟")) return;
+            if(!confirm("هل أنت متأكد من حذف هذه العملية؟")) return;
             const c = customers.find(x => x.id === currentCustomerId);
             const newList = c.transactions.filter(t => t.id !== tid);
             await db.collection('users').doc(currentUser.uid).collection('customers').doc(currentCustomerId).update({ transactions: newList });
